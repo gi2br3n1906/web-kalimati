@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 it('renders the public livewire gis map with same-origin api configuration', function (): void {
-    $this->get('/')
+    $this->get('/peta')
         ->assertOk()
         ->assertSee('Peta Desa Kalimati')
         ->assertSee('data-gis-map', escape: false)

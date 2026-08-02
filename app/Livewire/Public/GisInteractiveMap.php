@@ -24,7 +24,7 @@ class GisInteractiveMap extends Component
                 ],
                 'zoom' => (int) config('gis.default_zoom'),
             ],
-        ])->layout('layouts.public', [
+        ])->layout('components.layouts.app', [
             'title' => 'Peta Desa Kalimati',
         ]);
     }

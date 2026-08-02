@@ -43,7 +43,7 @@ class LedgerCalculator extends Component
             'business' => $business,
             'summary' => $summary,
             'entries' => $business?->ledgers()->withinDateRange($this->from ?: null, $this->until ?: null)->latest('transaction_date')->limit(12)->get() ?? collect(),
-        ])->layout('layouts.public', [
+        ])->layout('components.layouts.app', [
             'title' => 'Ringkasan Kas UMKM',
         ]);
     }

@@ -36,6 +36,6 @@ class ArchiveIndex extends Component
         })->latest()->get();
         $viewer = $this->viewingDocumentId === null ? null : $files->firstWhere('id', $this->viewingDocumentId);
 
-        return view('livewire.public.research-hub.archive-index', ['files' => $files, 'viewer' => $viewer, 'categories' => ResearchCategory::options(), 'cohorts' => ResearchFile::query()->publiclyAccessible()->distinct()->orderBy('kkn_cohort')->pluck('kkn_cohort')->all()])->layout('layouts.public', ['title' => 'Arsip Riset KKN']);
+        return view('livewire.public.research-hub.archive-index', ['files' => $files, 'viewer' => $viewer, 'categories' => ResearchCategory::options(), 'cohorts' => ResearchFile::query()->publiclyAccessible()->distinct()->orderBy('kkn_cohort')->pluck('kkn_cohort')->all()])->layout('components.layouts.app', ['title' => 'Arsip Riset KKN']);
     }
 }

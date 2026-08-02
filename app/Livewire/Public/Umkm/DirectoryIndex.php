@@ -33,7 +33,7 @@ class DirectoryIndex extends Component
         return view('livewire.public.umkm.directory-index', [
             'businesses' => $businesses,
             'categories' => UmkmCategory::options(),
-        ])->layout('layouts.public', [
+        ])->layout('components.layouts.app', [
             'title' => 'Direktori UMKM Kalimati',
         ]);
     }
