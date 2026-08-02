@@ -34,7 +34,7 @@ class DefaultRolesTest extends TestCase
         $superAdmin = Role::findByName(RoleType::SUPER_ADMIN->value, 'web');
         $permissions = Permission::query()->orderBy('name')->pluck('name')->all();
 
-        $this->assertCount(6, $permissions);
+        $this->assertCount(102, $permissions);
         $this->assertTrue($superAdmin->hasAllPermissions($permissions));
     }
 }

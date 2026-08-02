@@ -47,4 +47,11 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function withRole(RoleType $role): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'role_type' => $role,
+        ]);
+    }
 }

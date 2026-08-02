@@ -33,4 +33,14 @@ return [
         ],
     ],
 
+    'llm' => [
+        'url' => env('LLM_SERVICE_URL'),
+        'api_key' => env('LLM_SERVICE_API_KEY'),
+        'timeout' => (int) env('LLM_SERVICE_TIMEOUT', 15),
+    ],
+
+    'iot' => [
+        'webhook_secret' => env('IOT_WEBHOOK_SECRET'),
+    ],
+
 ];

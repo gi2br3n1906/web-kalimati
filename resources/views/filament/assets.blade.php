@@ -1,0 +1,1 @@
+@vite(['resources/css/filament/admin/theme.css', 'resources/js/filament-admin.js'])

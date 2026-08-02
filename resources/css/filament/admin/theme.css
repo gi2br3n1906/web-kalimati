@@ -1,0 +1,12 @@
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet-draw/dist/leaflet.draw.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.land-grid-polygon-map {
+    min-height: 360px;
+    border: 1px solid rgb(209 213 219);
+    border-radius: 6px;
+}
