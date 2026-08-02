@@ -10,9 +10,47 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
 beforeEach(function (): void {
+    config()->set('services.llm.provider', 'rag');
     config()->set('services.llm.url', 'http://llm.test/api/v1/recommend');
     config()->set('services.llm.api_key', 'phase-three-llm-key');
     config()->set('services.llm.timeout', 5);
+});
+
+it('calls Gemini Flash directly when the Gemini provider is enabled', function (): void {
+    config()->set('services.llm.provider', 'gemini');
+    config()->set('services.gemini.api_key', 'gemini-test-key');
+    config()->set('services.gemini.model', 'gemini-2.0-flash');
+    config()->set('services.gemini.url', 'https://generativelanguage.googleapis.com/v1beta');
+
+    $grid = LandGrid::factory()->create(['grid_code' => 'KAL-GEMINI-A01']);
+    $sensorLog = SensorLog::factory()->for($grid)->create();
+
+    Http::fake([
+        'https://generativelanguage.googleapis.com/*' => Http::response([
+            'candidates' => [[
+                'content' => [
+                    'parts' => [[
+                        'text' => json_encode([
+                            'soil_condition_summary' => 'Kondisi tanah cukup baik.',
+                            'fertilizer_dosage' => 'Gunakan kompos secukupnya.',
+                            'lime_treatment' => 'Tidak perlu dolomit saat ini.',
+                            'action_plan' => '1. Pantau kelembapan. 2. Periksa tanaman.',
+                        ], JSON_THROW_ON_ERROR),
+                    ]],
+                ],
+            ]],
+        ]),
+    ]);
+
+    $recommendation = app(FetchLLMRecommendationAction::class)->execute($grid, $sensorLog);
+
+    expect($recommendation->ai_model_used)->toBe('gemini-2.0-flash');
+
+    Http::assertSent(function (Request $request): bool {
+        return str_contains($request->url(), ':generateContent')
+            && $request->hasHeader('x-goog-api-key', 'gemini-test-key')
+            && $request['generationConfig']['responseMimeType'] === 'application/json';
+    });
 });
 
 it('persists an llm recommendation using the blueprint payload and response schema', function (): void {

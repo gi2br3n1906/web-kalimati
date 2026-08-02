@@ -7,6 +7,7 @@ namespace App\Actions\Agriculture;
 use App\Models\LandGrid;
 use App\Models\LandRecommendation;
 use App\Models\SensorLog;
+use App\Services\Agriculture\GeminiRecommendationClient;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,8 @@ use Throwable;
 
 final class FetchLLMRecommendationAction
 {
+    public function __construct(private readonly GeminiRecommendationClient $geminiClient) {}
+
     public function execute(LandGrid $landGrid, ?SensorLog $sensorLog = null): LandRecommendation
     {
         $sensorLog ??= $landGrid->sensorLogs()->latestRecorded()->first();
@@ -23,14 +26,7 @@ final class FetchLLMRecommendationAction
         }
 
         try {
-            $response = Http::acceptJson()
-                ->withHeaders([
-                    'X-API-Key' => (string) config('services.llm.api_key'),
-                ])
-                ->timeout((int) config('services.llm.timeout', 15))
-                ->post((string) config('services.llm.url'), $this->buildPayload($landGrid, $sensorLog))
-                ->throw()
-                ->json();
+            $response = $this->fetchRecommendation($landGrid, $sensorLog);
 
             $recommendation = Arr::get($response, 'recommendation');
 
@@ -57,6 +53,32 @@ final class FetchLLMRecommendationAction
 
             return $this->fallback($landGrid, $sensorLog);
         }
+    }
+
+    /**
+     * @return array{model_used: string, recommendation: array<array-key, mixed>}
+     */
+    private function fetchRecommendation(LandGrid $landGrid, SensorLog $sensorLog): array
+    {
+        $payload = $this->buildPayload($landGrid, $sensorLog);
+
+        if (config('services.llm.provider') === 'gemini') {
+            return $this->geminiClient->generate($payload);
+        }
+
+        $response = Http::acceptJson()
+            ->withHeaders([
+                'X-API-Key' => (string) config('services.llm.api_key'),
+            ])
+            ->timeout((int) config('services.llm.timeout', 15))
+            ->post((string) config('services.llm.url'), $payload)
+            ->throw()
+            ->json();
+
+        return [
+            'model_used' => (string) Arr::get($response, 'model_used', 'LLM-RAG'),
+            'recommendation' => Arr::get($response, 'recommendation', []),
+        ];
     }
 
     /**

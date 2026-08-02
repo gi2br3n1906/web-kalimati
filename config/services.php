@@ -34,9 +34,17 @@ return [
     ],
 
     'llm' => [
+        'provider' => env('LLM_PROVIDER', 'rag'),
         'url' => env('LLM_SERVICE_URL'),
         'api_key' => env('LLM_SERVICE_API_KEY'),
         'timeout' => (int) env('LLM_SERVICE_TIMEOUT', 15),
+    ],
+
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+        'url' => env('GEMINI_API_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+        'timeout' => (int) env('GEMINI_TIMEOUT', 30),
     ],
 
     'iot' => [
