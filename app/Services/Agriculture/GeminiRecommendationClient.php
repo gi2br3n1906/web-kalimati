@@ -10,14 +10,13 @@ use RuntimeException;
 final class GeminiRecommendationClient
 {
     /**
-     * @param  array<string, mixed>  $payload
      * @return array{model_used: string, recommendation: array<string, string>}
      */
-    public function generate(array $payload): array
+    public function generate(string $contextPrompt): array
     {
-        $apiKey = (string) config('services.gemini.api_key');
-        $model = (string) config('services.gemini.model', 'gemini-2.0-flash');
-        $baseUrl = rtrim((string) config('services.gemini.url'), '/');
+        $apiKey = (string) config('services.gemini.key');
+        $model = (string) config('services.gemini.model', 'gemini-3.6-flash');
+        $endpoint = rtrim((string) config('services.gemini.url'), '/');
 
         if ($apiKey === '') {
             throw new RuntimeException('GEMINI_API_KEY is not configured.');
@@ -25,29 +24,29 @@ final class GeminiRecommendationClient
 
         $response = Http::acceptJson()
             ->asJson()
-            ->withHeaders(['x-goog-api-key' => $apiKey])
             ->timeout((int) config('services.gemini.timeout', 30))
-            ->post("{$baseUrl}/models/{$model}:generateContent", [
-                'systemInstruction' => [
+            ->post($endpoint.'?key='.rawurlencode($apiKey), [
+                'model' => $model,
+                'system_instruction' => [
                     'parts' => [[
                         'text' => $this->systemInstruction(),
                     ]],
                 ],
-                'contents' => [[
-                    'role' => 'user',
+                'user_input' => [
                     'parts' => [[
-                        'text' => json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+                        'text' => $contextPrompt,
                     ]],
-                ]],
-                'generationConfig' => [
-                    'temperature' => 0.2,
-                    'responseMimeType' => 'application/json',
                 ],
+                'generation_config' => [
+                    'temperature' => 0.2,
+                    'response_mime_type' => 'application/json',
+                ],
+                'store' => false,
             ])
             ->throw()
             ->json();
 
-        $text = $response['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        $text = $response['model_output']['parts'][0]['text'] ?? null;
 
         if (! is_string($text) || trim($text) === '') {
             throw new RuntimeException('Gemini returned an empty recommendation.');

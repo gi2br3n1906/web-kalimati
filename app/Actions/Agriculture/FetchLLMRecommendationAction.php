@@ -9,7 +9,6 @@ use App\Models\LandRecommendation;
 use App\Models\SensorLog;
 use App\Services\Agriculture\GeminiRecommendationClient;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -60,33 +59,15 @@ final class FetchLLMRecommendationAction
      */
     private function fetchRecommendation(LandGrid $landGrid, SensorLog $sensorLog): array
     {
-        $payload = $this->buildPayload($landGrid, $sensorLog);
-
-        if (config('services.llm.provider') === 'gemini') {
-            return $this->geminiClient->generate($payload);
-        }
-
-        $response = Http::acceptJson()
-            ->withHeaders([
-                'X-API-Key' => (string) config('services.llm.api_key'),
-            ])
-            ->timeout((int) config('services.llm.timeout', 15))
-            ->post((string) config('services.llm.url'), $payload)
-            ->throw()
-            ->json();
-
-        return [
-            'model_used' => (string) Arr::get($response, 'model_used', 'LLM-RAG'),
-            'recommendation' => Arr::get($response, 'recommendation', []),
-        ];
+        return $this->geminiClient->generate($this->buildContextPrompt($landGrid, $sensorLog));
     }
 
     /**
-     * @return array<string, int|float|string|array<string, float>>
+     * Builds the factual user context independently from Gemini's behavioral instruction.
      */
-    private function buildPayload(LandGrid $landGrid, SensorLog $sensorLog): array
+    private function buildContextPrompt(LandGrid $landGrid, SensorLog $sensorLog): string
     {
-        return [
+        return json_encode([
             'land_grid_id' => (int) $landGrid->getKey(),
             'grid_code' => $landGrid->grid_code,
             'dusun_name' => $landGrid->dusun_name,
@@ -97,7 +78,7 @@ final class FetchLLMRecommendationAction
                 'temperature_celsius' => $sensorLog->temperature_celsius,
             ],
             'historical_treatments_count' => $landGrid->recommendations()->where('is_applied', true)->count(),
-        ];
+        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
     }
 
     /**
