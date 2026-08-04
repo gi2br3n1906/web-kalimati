@@ -8,6 +8,8 @@ readonly DEPLOY_BRANCH="${DEPLOY_BRANCH:-main}"
 
 cd "$APP_ROOT"
 
+git config --local core.fileMode false
+
 if ! git diff --quiet || ! git diff --cached --quiet; then
     echo "Deployment aborted: tracked local changes were found in $APP_ROOT." >&2
     git status --short >&2
