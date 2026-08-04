@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Public;
 
+use App\Support\PublicNewsCatalog;
 use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
@@ -48,23 +49,17 @@ class LandingIndex extends Component
     public function quickAccess(): array
     {
         return [
-            ['title' => 'Profil & Sejarah', 'description' => 'Asal-usul, wilayah, visi, dan pemerintahan desa.', 'url' => route('public.profile')],
-            ['title' => 'Smart Agriculture', 'description' => 'Telemetri IoT dan rekomendasi pertanian AI.', 'url' => route('public.agriculture')],
-            ['title' => 'Peta Spasial', 'description' => 'Jelajahi fasilitas publik dan petak lahan.', 'url' => route('public.gis.map')],
-            ['title' => 'UMKM Desa', 'description' => 'Temukan produk serta usaha warga Kalimati.', 'url' => route('public.umkm.directory')],
-            ['title' => 'Riset Hub', 'description' => 'Akses publikasi dan arsip pengetahuan desa.', 'url' => route('public.research.archive')],
-            ['title' => 'Layanan Desa', 'description' => 'Masuk ke portal administrasi dan persuratan.', 'url' => url('/admin')],
+            ['title' => 'Profil & Sejarah Desa', 'description' => 'Asal-usul, wilayah, visi, dan pemerintahan desa.', 'url' => route('public.profile')],
+            ['title' => 'Smart Agriculture & IoT', 'description' => 'Telemetri IoT dan rekomendasi pertanian AI.', 'url' => route('public.agriculture')],
+            ['title' => 'Peta Spasial Lahan', 'description' => 'Jelajahi fasilitas publik dan petak lahan.', 'url' => route('public.gis.map')],
+            ['title' => 'Kabar & Berita KKN', 'description' => 'Reportase KKN, Karang Taruna, dan pengumuman desa.', 'url' => route('public.news.index')],
         ];
     }
 
     /** @return array<int, array{date: string, category: string, title: string, excerpt: string, image: string}> */
     public function latestNews(): array
     {
-        return [
-            ['date' => '02 Agustus 2026', 'category' => 'Pertanian', 'title' => 'Kalibrasi Sensor Tanah Lahan Percontohan', 'excerpt' => 'Kelompok tani mengikuti pendampingan pembacaan pH, kelembapan, dan suhu tanah.', 'image' => 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80'],
-            ['date' => '28 Juli 2026', 'category' => 'UMKM', 'title' => 'Kurasi Produk Lokal Desa', 'excerpt' => 'Pelaku UMKM melengkapi profil usaha dan katalog produk untuk promosi digital.', 'image' => 'https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?auto=format&fit=crop&w=900&q=80'],
-            ['date' => '20 Juli 2026', 'category' => 'Pelayanan', 'title' => 'Digitalisasi Informasi Publik', 'excerpt' => 'Pemerintah desa memperluas akses informasi melalui portal resmi dan data spasial.', 'image' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80'],
-        ];
+        return PublicNewsCatalog::articles()->take(3)->all();
     }
 
     public function selectHeroSlide(int $slide): void

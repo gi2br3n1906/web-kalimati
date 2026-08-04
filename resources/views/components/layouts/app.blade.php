@@ -18,9 +18,7 @@
         <header class="sticky top-0 z-50 border-b border-[#e2e8f0] bg-white/85 backdrop-blur-md">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
                 <a href="{{ route('public.home') }}" class="flex items-center gap-3">
-                    <span class="grid h-10 w-10 place-items-center rounded-xl bg-[#2d6a4f] text-white shadow-sm" aria-hidden="true">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.8-2.9 8.3-7 10-4.1-1.7-7-5.2-7-10V6l7-3z"/><path d="M8 14l4-5 4 5M9.5 12h5"/></svg>
-                    </span>
+                    <img src="{{ asset('images/logo-boyolali.svg') }}" alt="Logo Kabupaten Boyolali" class="h-11 w-9">
                     <span><span class="block text-sm font-extrabold">Desa Kalimati</span><span class="block text-[11px] font-medium text-slate-500">Kab. Boyolali</span></span>
                 </a>
 
@@ -30,33 +28,33 @@
                         ['label' => 'Profil & Sejarah', 'route' => 'public.profile'],
                         ['label' => 'Smart Agriculture', 'route' => 'public.agriculture'],
                         ['label' => 'Peta Spasial', 'route' => 'public.gis.map'],
-                        ['label' => 'UMKM Desa', 'route' => 'public.umkm.directory'],
-                        ['label' => 'Riset Hub', 'route' => 'public.research.archive'],
+                        ['label' => 'Kabar Desa', 'route' => 'public.news.index'],
                     ];
                 @endphp
 
                 <nav class="hidden items-center gap-1 lg:flex" aria-label="Navigasi publik">
                     @foreach ($navigation as $item)
-                        <a href="{{ route($item['route']) }}" class="relative rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($item['route']) ? 'bg-[rgba(45,106,79,0.08)] text-[#2d6a4f]' : 'text-slate-600 hover:bg-slate-100 hover:text-[#0f172a]' }}">
+                        <a href="{{ route($item['route']) }}" class="relative rounded-lg px-3 py-2 text-xs font-semibold transition {{ request()->routeIs($item['route'] === 'public.news.index' ? 'public.news.*' : $item['route']) ? 'bg-[rgba(45,106,79,0.08)] text-[#2d6a4f]' : 'text-slate-600 hover:bg-slate-100 hover:text-[#0f172a]' }}">
                             {{ $item['label'] }}
-                            @if (request()->routeIs($item['route']))
+                            @if (request()->routeIs($item['route'] === 'public.news.index' ? 'public.news.*' : $item['route']))
                                 <span class="absolute inset-x-3 -bottom-[13px] h-0.5 rounded-full bg-[#2d6a4f]"></span>
                             @endif
                         </a>
                     @endforeach
                 </nav>
 
-                <button type="button" class="grid h-10 w-10 place-items-center rounded-xl border border-[#e2e8f0] text-slate-700 lg:hidden" @click="mobileMenuOpen = ! mobileMenuOpen" :aria-expanded="mobileMenuOpen" aria-label="Buka menu navigasi">
+                <div class="flex items-center gap-2"><a href="{{ url('/admin') }}" class="hidden rounded-full bg-[#2d6a4f] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#1b4332] sm:inline-flex">Panel Admin →</a><button type="button" class="grid h-10 w-10 place-items-center rounded-xl border border-[#e2e8f0] text-slate-700 lg:hidden" @click="mobileMenuOpen = ! mobileMenuOpen" :aria-expanded="mobileMenuOpen" aria-label="Buka menu navigasi">
                     <svg x-show="! mobileMenuOpen" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
                     <svg x-show="mobileMenuOpen" x-cloak class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
-                </button>
+                </button></div>
             </div>
 
             <nav x-show="mobileMenuOpen" x-collapse x-cloak class="border-t border-[#e2e8f0] bg-white px-4 py-3 lg:hidden" aria-label="Navigasi seluler">
                 <div class="mx-auto grid max-w-7xl gap-1">
                     @foreach ($navigation as $item)
-                        <a href="{{ route($item['route']) }}" class="rounded-xl px-4 py-3 text-sm font-semibold {{ request()->routeIs($item['route']) ? 'bg-[rgba(45,106,79,0.08)] text-[#2d6a4f]' : 'text-slate-600 hover:bg-slate-100' }}">{{ $item['label'] }}</a>
+                        <a href="{{ route($item['route']) }}" class="rounded-xl px-4 py-3 text-sm font-semibold {{ request()->routeIs($item['route'] === 'public.news.index' ? 'public.news.*' : $item['route']) ? 'bg-[rgba(45,106,79,0.08)] text-[#2d6a4f]' : 'text-slate-600 hover:bg-slate-100' }}">{{ $item['label'] }}</a>
                     @endforeach
+                    <a href="{{ url('/admin') }}" class="rounded-xl bg-[#2d6a4f] px-4 py-3 text-center text-sm font-bold text-white sm:hidden">Panel Admin →</a>
                 </div>
             </nav>
         </header>
@@ -70,7 +68,7 @@
                     <p class="mt-4 text-sm leading-6 text-slate-400">Portal resmi informasi, potensi, dan pelayanan publik Desa Kalimati.</p>
                 </div>
                 <div><h2 class="font-bold text-white">Akses Cepat</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.home') }}">Beranda</a><a href="{{ route('public.profile') }}">Profil & Sejarah</a><a href="{{ route('public.agriculture') }}">Smart Agriculture</a></div></div>
-                <div><h2 class="font-bold text-white">Layanan</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.gis.map') }}">Peta Spasial</a><a href="{{ route('public.umkm.directory') }}">UMKM Desa</a><a href="{{ route('public.research.archive') }}">Riset Hub</a></div></div>
+                <div><h2 class="font-bold text-white">Layanan</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.gis.map') }}">Peta Spasial</a><a href="{{ route('public.news.index') }}">Kabar Desa</a><a href="{{ url('/admin') }}">Panel Admin</a></div></div>
                 <div><h2 class="font-bold text-white">Kontak Balai Desa</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><span>pemdes@kalimati.desa.id</span><span>+62 812-3456-7890</span><span>Senin–Jumat, 08.00–15.00 WIB</span></div></div>
             </div>
             <div class="border-t border-white/10 px-4 py-5 text-center text-xs text-slate-500">&copy; 2026 Pemerintah Desa Kalimati. Seluruh hak dilindungi.</div>

@@ -39,12 +39,12 @@ class AgricultureIndex extends Component
     public function farmerGroups(): array
     {
         return [
+            ['name' => 'Poktan Sumber Rejeki', 'hamlet' => 'Dusun Kedungrandu', 'members' => '100 anggota'],
+            ['name' => 'Poktan Kismo Tani', 'hamlet' => 'Dusun Brojo', 'members' => '125 anggota'],
             ['name' => 'Poktan Ngudi Makmur', 'hamlet' => 'Dusun Dampit', 'members' => '176 anggota'],
             ['name' => 'Poktan Sumber Mulyo', 'hamlet' => 'Dusun Kalimati', 'members' => '155 anggota'],
-            ['name' => 'Poktan Margoyoso Lestari', 'hamlet' => 'Dusun Dampit', 'members' => '150 anggota'],
-            ['name' => 'Poktan Kismo Tani', 'hamlet' => 'Dusun Brojo', 'members' => '125 anggota'],
-            ['name' => 'Poktan Sumber Rejeki', 'hamlet' => 'Dusun Kedungrandu', 'members' => '100 anggota'],
             ['name' => 'Poktan Seger Waras', 'hamlet' => 'Dusun Kalimati', 'members' => '14 anggota'],
+            ['name' => 'Poktan Margoyoso Lestari', 'hamlet' => 'Dusun Dampit', 'members' => '150 anggota'],
         ];
     }
 
@@ -54,6 +54,57 @@ class AgricultureIndex extends Component
         return ['name' => 'TLOGO TIRTO', 'hamlet' => 'Dusun Kalimati', 'members' => '123'];
     }
 
+    /** @return array<int, array{title: string, value: string, detail: string}> */
+    public function highlights(): array
+    {
+        return [
+            ['title' => 'Total Lahan Pertanian', 'value' => '97,38 Ha', 'detail' => 'Lahan Perhutani melalui Sistem Bagi Hasil'],
+            ['title' => 'Jumlah Petani', 'value' => '720 Petani', 'detail' => 'Gapoktan dan 6 Kelompok Tani'],
+            ['title' => 'Karakteristik Sawah', 'value' => '100% Tadah Hujan', 'detail' => 'Sangat membutuhkan IoT dan AI Gemini'],
+        ];
+    }
+
+    /** @return array<int, array{title: string, description: string}> */
+    public function cultivationStages(): array
+    {
+        return [
+            ['title' => 'Tahap 1 — Persiapan', 'description' => 'Pembersihan lahan, pengolahan tanah, pembuatan drainase, dan penyiapan benih.'],
+            ['title' => 'Tahap 2 — Penanaman & Pemeliharaan', 'description' => 'Tanam benih, pemupukan presisi, penyiangan gulma, dan pengamatan hama.'],
+            ['title' => 'Tahap 3 — Panen Optimal', 'description' => 'Panen usia 110–120 HST untuk kualitas tongkol dan hasil terbaik.'],
+        ];
+    }
+
+    /** @return array<int, array{name: string, impact: string}> */
+    public function pests(): array
+    {
+        return [
+            ['name' => 'Tikus', 'impact' => 'Menyerang batang dan tongkol jagung.'],
+            ['name' => 'Ulat Grayak', 'impact' => 'Merusak daun hingga titik tumbuh.'],
+            ['name' => 'Bule', 'impact' => 'Kerusakan pada bagian daun dan pertumbuhan.'],
+            ['name' => 'Engkok (Uret)', 'impact' => 'Menyerang akar tanaman muda hingga layu atau mati.'],
+        ];
+    }
+
+    /** @return array<int, array{label: string, value: string, detail: string}> */
+    public function cropPatterns(): array
+    {
+        return [
+            ['label' => 'Tumpang Sari Utama', 'value' => 'Jagung & Pisang', 'detail' => 'Optimalisasi lahan kering dan pangan'],
+            ['label' => 'Komoditas Tambahan', 'value' => 'Tembakau & Singkong', 'detail' => 'Diversifikasi komoditas pertanian'],
+            ['label' => 'Siklus Jagung', 'value' => '2–3 kali setahun', 'detail' => 'Panen optimal usia 110–120 HST'],
+        ];
+    }
+
+    /** @return array<int, array{name: string, unit: string, purpose: string}> */
+    public function sensorModules(): array
+    {
+        return [
+            ['name' => 'pH Tanah', 'unit' => 'pH', 'purpose' => 'Kesesuaian tingkat keasaman tanah'],
+            ['name' => 'Kelembapan Tanah', 'unit' => '%', 'purpose' => 'Ketersediaan air pada sawah tadah hujan'],
+            ['name' => 'NPK Tanah', 'unit' => 'mg/kg', 'purpose' => 'Dasar rekomendasi pemupukan presisi'],
+        ];
+    }
+
     public function render(): View
     {
         return view('livewire.public.agriculture-index', [
@@ -61,6 +112,11 @@ class AgricultureIndex extends Component
             'aiNeed' => $this->aiNeed(),
             'farmerGroups' => $this->farmerGroups(),
             'waterUserAssociation' => $this->waterUserAssociation(),
+            'highlights' => $this->highlights(),
+            'cultivationStages' => $this->cultivationStages(),
+            'pests' => $this->pests(),
+            'cropPatterns' => $this->cropPatterns(),
+            'sensorModules' => $this->sensorModules(),
         ])->layout('components.layouts.app', ['title' => 'Pertanian Presisi & Komoditas Kalimati']);
     }
 }

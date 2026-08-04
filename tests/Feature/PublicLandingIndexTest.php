@@ -19,11 +19,14 @@ it('renders the public village landing page with the expected public service lin
         ->assertSee('Akses Cepat')
         ->assertSee('Sambutan Kepala Desa')
         ->assertSee('Berita & Pengumuman Terbaru', escape: false)
+        ->assertSee('Kabar & Berita KKN')
+        ->assertSee('Pemetaan Potensi Desa Bersama Tim KKN')
         ->assertSee(route('public.profile'))
         ->assertSee(route('public.agriculture'))
         ->assertSee(route('public.gis.map'))
-        ->assertSee(route('public.umkm.directory'))
-        ->assertSee(route('public.research.archive'));
+        ->assertSee(route('public.news.index'))
+        ->assertDontSee('/umkm')
+        ->assertDontSee('/riset');
 });
 
 it('switches the civic hero carousel while rejecting an unavailable slide', function (): void {
