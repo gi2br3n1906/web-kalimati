@@ -121,8 +121,8 @@ class NewsArticleResource extends Resource
                                 'undo',
                                 'attachFiles',
                             ])
-                            ->extraAttributes([
-                                'class' => '[&_.trix-content]:min-h-[450px] [&_.trix-content]:bg-white [&_.trix-content]:p-4 [&_.trix-content]:border [&_.trix-content]:border-gray-300 [&_.trix-content]:rounded-lg',
+                            ->extraInputAttributes([
+                                'class' => 'news-content-editor',
                             ]),
                     ])
                     ->columnSpanFull(),

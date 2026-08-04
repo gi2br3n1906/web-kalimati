@@ -100,10 +100,26 @@ it('renders the news article editor with native filament controls and no custom 
         ->assertSee('Foto Thumbnail')
         ->assertSee('Karang Taruna')
         ->assertSee('Pemerintah Desa')
-        ->assertSee('[&amp;_.trix-content]:min-h-[450px]', false)
-        ->assertSee('[&amp;_.trix-content]:bg-white', false)
+        ->assertSee('news-content-editor', false)
+        ->assertSee('/js/filament/support/support.js', false)
+        ->assertSee('/js/filament/forms/components/rich-editor.js', false)
+        ->assertSee('/js/filament/forms/components/select.js', false)
+        ->assertSee('/js/filament/forms/components/file-upload.js', false)
         ->assertDontSee('news_draft_content', false)
         ->assertDontSee('Ditemukan draft isi berita', false);
+
+    config()->set('trustedproxy.proxies', '*');
+
+    $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.10'])
+        ->withHeaders([
+            'Host' => 'internal-web',
+            'X-Forwarded-Host' => 'admin.kalimati.test',
+            'X-Forwarded-Proto' => 'https',
+        ])
+        ->get('/admin/news-articles/create')
+        ->assertOk()
+        ->assertSee('https://admin.kalimati.test/js/filament/forms/components/rich-editor.js', false)
+        ->assertDontSee('http://admin.kalimati.test/js/filament/forms/components/rich-editor.js', false);
 
     $createPage = Livewire::test(CreateNewsArticle::class);
 
