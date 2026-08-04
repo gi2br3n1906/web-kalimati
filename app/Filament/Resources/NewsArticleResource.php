@@ -45,18 +45,18 @@ class NewsArticleResource extends Resource
                 Section::make('Informasi & Publikasi Artikel')
                     ->description('Atur judul, kategori, thumbnail, dan status terbit artikel.')
                     ->schema([
-                        Grid::make(3)
+                        TextInput::make('title')
+                            ->label('Judul Artikel')
+                            ->placeholder('Masukkan judul berita...')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(static function (?string $state, Set $set): void {
+                                $set('slug', Str::slug((string) $state));
+                            })
+                            ->columnSpanFull(),
+                        Grid::make(2)
                             ->schema([
-                                TextInput::make('title')
-                                    ->label('Judul Artikel')
-                                    ->placeholder('Masukkan judul berita...')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(static function (?string $state, Set $set): void {
-                                        $set('slug', Str::slug((string) $state));
-                                    })
-                                    ->columnSpan(2),
                                 TextInput::make('slug')
                                     ->label('Slug URL')
                                     ->required()
@@ -64,32 +64,37 @@ class NewsArticleResource extends Resource
                                     ->unique(ignoreRecord: true)
                                     ->helperText('Otomatis terisi dari judul.')
                                     ->columnSpan(1),
+                                Select::make('category')
+                                    ->label('Kategori')
+                                    ->options([
+                                        'kkn' => 'KKN',
+                                        'karang_taruna' => 'Karang Taruna',
+                                        'pemdes' => 'Pemerintah Desa',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->searchable()
+                                    ->columnSpan(1),
                             ]),
                         Grid::make(3)
                             ->schema([
-                                Select::make('category')
-                                    ->label('Kategori')
-                                    ->options(NewsCategory::class)
-                                    ->required()
-                                    ->searchable()
-                                    ->preload(),
                                 SpatieMediaLibraryFileUpload::make('thumbnail')
                                     ->label('Foto Thumbnail')
                                     ->collection(NewsArticle::THUMBNAIL_COLLECTION)
                                     ->conversion('preview')
                                     ->image()
                                     ->imageEditor()
-                                    ->maxSize(5 * 1024),
-                                Grid::make(1)
-                                    ->schema([
-                                        Toggle::make('is_published')
-                                            ->label('Terbitkan Langsung')
-                                            ->default(true),
-                                        DateTimePicker::make('published_at')
-                                            ->label('Waktu Terbit')
-                                            ->seconds(false)
-                                            ->default(now()),
-                                    ]),
+                                    ->maxSize(5 * 1024)
+                                    ->columnSpan(1),
+                                Toggle::make('is_published')
+                                    ->label('Terbitkan Langsung')
+                                    ->default(true)
+                                    ->columnSpan(1),
+                                DateTimePicker::make('published_at')
+                                    ->label('Waktu Terbit')
+                                    ->seconds(false)
+                                    ->default(now())
+                                    ->columnSpan(1),
                             ]),
                     ])
                     ->collapsible()
@@ -116,8 +121,8 @@ class NewsArticleResource extends Resource
                                 'undo',
                                 'attachFiles',
                             ])
-                            ->extraInputAttributes([
-                                'style' => 'min-height: 500px;',
+                            ->extraAttributes([
+                                'class' => '[&_.trix-content]:min-h-[450px] [&_.trix-content]:bg-white [&_.trix-content]:p-4 [&_.trix-content]:border [&_.trix-content]:border-gray-300 [&_.trix-content]:rounded-lg',
                             ]),
                     ])
                     ->columnSpanFull(),

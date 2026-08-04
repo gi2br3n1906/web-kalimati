@@ -100,7 +100,8 @@ it('renders the news article editor with native filament controls and no custom 
         ->assertSee('Foto Thumbnail')
         ->assertSee('Karang Taruna')
         ->assertSee('Pemerintah Desa')
-        ->assertSee('min-height: 500px;', false)
+        ->assertSee('[&amp;_.trix-content]:min-h-[450px]', false)
+        ->assertSee('[&amp;_.trix-content]:bg-white', false)
         ->assertDontSee('news_draft_content', false)
         ->assertDontSee('Ditemukan draft isi berita', false);
 
