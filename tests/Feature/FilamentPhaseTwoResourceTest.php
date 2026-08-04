@@ -9,6 +9,7 @@ use App\Filament\Resources\NewsArticleResource\Pages\EditNewsArticle;
 use App\Models\NewsArticle;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Livewire\Livewire;
@@ -92,16 +93,24 @@ it('renders the news article editor with publication controls and local draft pr
 
     $this->get('/admin/news-articles/create')
         ->assertOk()
-        ->assertSee('Artikel Berita')
-        ->assertSee('Publikasi')
+        ->assertSee('Informasi &amp; Publikasi Artikel', false)
+        ->assertSee('Isi Berita')
+        ->assertSee('Judul Artikel')
+        ->assertSee('Slug URL')
+        ->assertSee('Foto Thumbnail')
         ->assertSee('Karang Taruna')
         ->assertSee('Pemerintah Desa')
-        ->assertSee('min-height: 450px;', false)
-        ->assertSee('filament.news-articles.create.content-draft', false)
+        ->assertSee('min-height: 550px;', false)
+        ->assertSee('news_draft_content', false)
         ->assertSee('setInterval', false)
+        ->assertSee('$cleanup', false)
         ->assertSee('5000', false);
 
-    Livewire::test(CreateNewsArticle::class)
+    $createPage = Livewire::test(CreateNewsArticle::class);
+
+    expect($createPage->instance()->getMaxContentWidth())->toBe(MaxWidth::Full);
+
+    $createPage
         ->fillForm([
             'title' => 'Pelatihan Digital Karang Taruna',
             'category' => NewsCategory::KARANG_TARUNA->value,
@@ -119,7 +128,11 @@ it('renders the news article editor with publication controls and local draft pr
 
     expect($article->category)->toBe(NewsCategory::KARANG_TARUNA);
 
-    Livewire::test(EditNewsArticle::class, ['record' => $article->getRouteKey()])
+    $editPage = Livewire::test(EditNewsArticle::class, ['record' => $article->getRouteKey()]);
+
+    expect($editPage->instance()->getMaxContentWidth())->toBe(MaxWidth::Full);
+
+    $editPage
         ->assertFormSet([
             'title' => 'Pelatihan Digital Karang Taruna',
             'category' => NewsCategory::KARANG_TARUNA->value,

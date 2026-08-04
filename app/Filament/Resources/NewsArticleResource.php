@@ -20,7 +20,7 @@ use Illuminate\Support\Str;
 
 class NewsArticleResource extends Resource
 {
-    public const CONTENT_DRAFT_STORAGE_KEY = 'filament.news-articles.create.content-draft';
+    public const CONTENT_DRAFT_STORAGE_KEY = 'news_draft_content';
 
     protected static ?string $model = NewsArticle::class;
 
@@ -38,85 +38,106 @@ class NewsArticleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Artikel Berita')
-                    ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->label('Judul')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(static function (?string $state, Set $set): void {
-                                $set('slug', Str::slug((string) $state));
-                            }),
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true)
-                            ->helperText('Digunakan pada URL artikel.'),
-                        Forms\Components\Select::make('category')
-                            ->label('Kategori')
-                            ->options([
-                                'kkn' => 'KKN',
-                                'karang_taruna' => 'Karang Taruna',
-                                'pemdes' => 'Pemerintah Desa',
-                            ])
-                            ->required()
-                            ->native(false)
-                            ->searchable(),
-                        Forms\Components\RichEditor::make('content')
-                            ->label('Isi Berita')
-                            ->required()
-                            ->extraAttributes([
-                                'style' => 'min-height: 450px;',
-                            ])
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(2)
+                Forms\Components\Group::make([
+                    Forms\Components\Section::make('Informasi & Publikasi Artikel')
+                        ->schema([
+                            Forms\Components\Grid::make(3)
+                                ->schema([
+                                    Forms\Components\TextInput::make('title')
+                                        ->label('Judul Artikel')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(static function (?string $state, Set $set): void {
+                                            $set('slug', Str::slug((string) $state));
+                                        })
+                                        ->columnSpan(2),
+                                    Forms\Components\TextInput::make('slug')
+                                        ->label('Slug URL')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->unique(ignoreRecord: true)
+                                        ->helperText('Digunakan pada URL artikel.')
+                                        ->columnSpan(1),
+                                ])
+                                ->columnSpanFull(),
+                            Forms\Components\Grid::make(3)
+                                ->schema([
+                                    Forms\Components\Select::make('category')
+                                        ->label('Kategori')
+                                        ->options([
+                                            'kkn' => 'KKN',
+                                            'karang_taruna' => 'Karang Taruna',
+                                            'pemdes' => 'Pemerintah Desa',
+                                        ])
+                                        ->required()
+                                        ->native(false)
+                                        ->searchable()
+                                        ->columnSpan(1),
+                                    Forms\Components\SpatieMediaLibraryFileUpload::make('thumbnail')
+                                        ->label('Foto Thumbnail')
+                                        ->collection(NewsArticle::THUMBNAIL_COLLECTION)
+                                        ->conversion('preview')
+                                        ->image()
+                                        ->imageEditor()
+                                        ->maxSize(5 * 1024)
+                                        ->columnSpan(1),
+                                    Forms\Components\Group::make([
+                                        Forms\Components\Toggle::make('is_published')
+                                            ->label('Terbitkan')
+                                            ->live()
+                                            ->default(false),
+                                        Forms\Components\DateTimePicker::make('published_at')
+                                            ->label('Waktu Terbit')
+                                            ->seconds(false)
+                                            ->required(static fn (Get $get): bool => (bool) $get('is_published')),
+                                    ])
+                                        ->columnSpan(1),
+                                ])
+                                ->columnSpanFull(),
+                        ])
+                        ->collapsible()
+                        ->columnSpanFull(),
+                    Forms\Components\Section::make('Isi Berita')
+                        ->schema([
+                            Forms\Components\RichEditor::make('content')
+                                ->hiddenLabel()
+                                ->required()
+                                ->extraAttributes([
+                                    'style' => 'min-height: 550px;',
+                                ])
+                                ->columnSpanFull(),
+                        ])
+                        ->columnSpanFull(),
+                ])
                     ->extraAttributes([
-                        'x-data' => '{ autosaveTimer: null, destroy() { if (this.autosaveTimer !== null) window.clearInterval(this.autosaveTimer) } }',
+                        'x-data' => '{}',
                         'x-init' => <<<'JS'
-                             if (window.location.pathname.endsWith('/create')) {
-                                 const draftKey = 'filament.news-articles.create.content-draft';
-                                 const savedDraft = localStorage.getItem(draftKey);
+                            if (window.location.pathname.endsWith('/create')) {
+                                const draftKey = 'news_draft_content';
+                                const savedDraft = localStorage.getItem(draftKey);
 
-                                 if (savedDraft && confirm('Ditemukan draft isi berita yang belum tersimpan. Pulihkan draft?')) {
-                                     $wire.set('data.content', savedDraft);
-                                 }
+                                if (savedDraft && confirm('Ditemukan draft isi berita yang belum tersimpan. Pulihkan draft?')) {
+                                    $wire.set('data.content', savedDraft);
+                                }
 
-                                autosaveTimer = window.setInterval(() => {
-                                     const content = $wire.get('data.content');
+                                const autosaveTimer = window.setInterval(() => {
+                                    const content = $wire.get('data.content');
 
-                                     if (typeof content === 'string' && content.trim() !== '') {
-                                         localStorage.setItem(draftKey, content);
-                                     } else {
-                                         localStorage.removeItem(draftKey);
-                                     }
-                                 }, 5000);
-                             }
-                             JS,
+                                    if (typeof content === 'string' && content.trim() !== '') {
+                                        localStorage.setItem(draftKey, content);
+                                    } else {
+                                        localStorage.removeItem(draftKey);
+                                    }
+                                }, 5000);
+
+                                $cleanup(() => window.clearInterval(autosaveTimer));
+                            }
+                            JS,
                     ])
-                    ->columnSpan(2),
-                Forms\Components\Section::make('Publikasi')
-                    ->schema([
-                        Forms\Components\SpatieMediaLibraryFileUpload::make('thumbnail')
-                            ->label('Thumbnail')
-                            ->collection(NewsArticle::THUMBNAIL_COLLECTION)
-                            ->conversion('preview')
-                            ->image()
-                            ->imageEditor()
-                            ->maxSize(5 * 1024),
-                        Forms\Components\Toggle::make('is_published')
-                            ->label('Terbitkan')
-                            ->live()
-                            ->default(false),
-                        Forms\Components\DateTimePicker::make('published_at')
-                            ->label('Waktu Terbit')
-                            ->seconds(false)
-                            ->required(static fn (Get $get): bool => (bool) $get('is_published')),
-                    ])
-                    ->columnSpan(1),
+                    ->columnSpanFull(),
             ])
-            ->columns(3);
+            ->columns(1);
     }
 
     public static function table(Table $table): Table

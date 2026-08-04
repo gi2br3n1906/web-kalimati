@@ -6,11 +6,17 @@ namespace App\Filament\Resources\NewsArticleResource\Pages;
 
 use App\Filament\Resources\NewsArticleResource;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Auth;
 
 class CreateNewsArticle extends CreateRecord
 {
     protected static string $resource = NewsArticleResource::class;
+
+    public function getMaxContentWidth(): MaxWidth
+    {
+        return MaxWidth::Full;
+    }
 
     /**
      * @param  array<string, mixed>  $data
