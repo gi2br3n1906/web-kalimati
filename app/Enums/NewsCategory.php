@@ -6,18 +6,16 @@ namespace App\Enums;
 
 enum NewsCategory: string
 {
-    case KEGIATAN = 'kegiatan';
-    case PENGUMUMAN = 'pengumuman';
-    case POTENSI_DESA = 'potensi_desa';
-    case KESEHATAN = 'kesehatan';
+    case KKN = 'kkn';
+    case KARANG_TARUNA = 'karang_taruna';
+    case PEMDES = 'pemdes';
 
     public function label(): string
     {
         return match ($this) {
-            self::KEGIATAN => 'Kegiatan',
-            self::PENGUMUMAN => 'Pengumuman',
-            self::POTENSI_DESA => 'Potensi Desa',
-            self::KESEHATAN => 'Kesehatan',
+            self::KKN => 'KKN',
+            self::KARANG_TARUNA => 'Karang Taruna',
+            self::PEMDES => 'Pemerintah Desa',
         };
     }
 

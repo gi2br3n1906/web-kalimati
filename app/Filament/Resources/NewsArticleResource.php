@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
 
 class NewsArticleResource extends Resource
 {
+    public const CONTENT_DRAFT_STORAGE_KEY = 'filament.news-articles.create.content-draft';
+
     protected static ?string $model = NewsArticle::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
@@ -36,17 +38,15 @@ class NewsArticleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Artikel')
+                Forms\Components\Section::make('Artikel Berita')
                     ->schema([
                         Forms\Components\TextInput::make('title')
                             ->label('Judul')
                             ->required()
                             ->maxLength(255)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(static function (?string $state, Set $set, Get $get): void {
-                                if (blank($get('slug'))) {
-                                    $set('slug', Str::slug((string) $state));
-                                }
+                            ->afterStateUpdated(static function (?string $state, Set $set): void {
+                                $set('slug', Str::slug((string) $state));
                             }),
                         Forms\Components\TextInput::make('slug')
                             ->required()
@@ -55,15 +55,46 @@ class NewsArticleResource extends Resource
                             ->helperText('Digunakan pada URL artikel.'),
                         Forms\Components\Select::make('category')
                             ->label('Kategori')
-                            ->options(NewsCategory::options())
+                            ->options([
+                                'kkn' => 'KKN',
+                                'karang_taruna' => 'Karang Taruna',
+                                'pemdes' => 'Pemerintah Desa',
+                            ])
+                            ->required()
                             ->native(false)
-                            ->required(),
+                            ->searchable(),
                         Forms\Components\RichEditor::make('content')
                             ->label('Isi Berita')
                             ->required()
+                            ->extraAttributes([
+                                'style' => 'min-height: 450px;',
+                            ])
                             ->columnSpanFull(),
                     ])
                     ->columns(2)
+                    ->extraAttributes([
+                        'x-data' => '{ autosaveTimer: null, destroy() { if (this.autosaveTimer !== null) window.clearInterval(this.autosaveTimer) } }',
+                        'x-init' => <<<'JS'
+                             if (window.location.pathname.endsWith('/create')) {
+                                 const draftKey = 'filament.news-articles.create.content-draft';
+                                 const savedDraft = localStorage.getItem(draftKey);
+
+                                 if (savedDraft && confirm('Ditemukan draft isi berita yang belum tersimpan. Pulihkan draft?')) {
+                                     $wire.set('data.content', savedDraft);
+                                 }
+
+                                autosaveTimer = window.setInterval(() => {
+                                     const content = $wire.get('data.content');
+
+                                     if (typeof content === 'string' && content.trim() !== '') {
+                                         localStorage.setItem(draftKey, content);
+                                     } else {
+                                         localStorage.removeItem(draftKey);
+                                     }
+                                 }, 5000);
+                             }
+                             JS,
+                    ])
                     ->columnSpan(2),
                 Forms\Components\Section::make('Publikasi')
                     ->schema([

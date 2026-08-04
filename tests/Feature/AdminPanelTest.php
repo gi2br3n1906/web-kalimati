@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use Filament\Facades\Filament;
 use Tests\TestCase;
 
 class AdminPanelTest extends TestCase
@@ -12,5 +13,13 @@ class AdminPanelTest extends TestCase
     {
         $this->get('/admin/login')
             ->assertOk();
+    }
+
+    public function test_admin_panel_enables_sidebar_collapse_and_unsaved_change_alerts(): void
+    {
+        $panel = Filament::getPanel('admin');
+
+        self::assertTrue($panel->isSidebarCollapsibleOnDesktop());
+        self::assertTrue($panel->hasUnsavedChangesAlerts());
     }
 }

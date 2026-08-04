@@ -11,13 +11,13 @@ it('generates unique slugs for news articles', function (): void {
     $first = NewsArticle::factory()->create([
         'title' => 'Panen Raya Desa Kalimati',
         'slug' => null,
-        'category' => NewsCategory::KEGIATAN,
+        'category' => NewsCategory::KKN,
     ]);
 
     $second = NewsArticle::factory()->create([
         'title' => 'Panen Raya Desa Kalimati',
         'slug' => null,
-        'category' => NewsCategory::KEGIATAN,
+        'category' => NewsCategory::KKN,
     ]);
 
     expect($first->slug)->toBe('panen-raya-desa-kalimati')

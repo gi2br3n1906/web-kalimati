@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Enums\NewsCategory;
 use App\Enums\RoleType;
+use App\Filament\Resources\NewsArticleResource\Pages\CreateNewsArticle;
+use App\Filament\Resources\NewsArticleResource\Pages\EditNewsArticle;
+use App\Models\NewsArticle;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -79,4 +84,45 @@ it('denies kelompok tani access to phase two filament resources', function (): v
 
     $this->get('/admin/gis-point-of-interests')
         ->assertForbidden();
+});
+
+it('renders the news article editor with publication controls and local draft protection', function (): void {
+    $this->seed(DatabaseSeeder::class);
+    $this->actingAs(phaseTwoUser(RoleType::SUPER_ADMIN));
+
+    $this->get('/admin/news-articles/create')
+        ->assertOk()
+        ->assertSee('Artikel Berita')
+        ->assertSee('Publikasi')
+        ->assertSee('Karang Taruna')
+        ->assertSee('Pemerintah Desa')
+        ->assertSee('min-height: 450px;', false)
+        ->assertSee('filament.news-articles.create.content-draft', false)
+        ->assertSee('setInterval', false)
+        ->assertSee('5000', false);
+
+    Livewire::test(CreateNewsArticle::class)
+        ->fillForm([
+            'title' => 'Pelatihan Digital Karang Taruna',
+            'category' => NewsCategory::KARANG_TARUNA->value,
+            'content' => '<p>Materi pelatihan digital.</p>',
+        ])
+        ->assertFormSet([
+            'slug' => 'pelatihan-digital-karang-taruna',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $article = NewsArticle::query()
+        ->where('slug', 'pelatihan-digital-karang-taruna')
+        ->firstOrFail();
+
+    expect($article->category)->toBe(NewsCategory::KARANG_TARUNA);
+
+    Livewire::test(EditNewsArticle::class, ['record' => $article->getRouteKey()])
+        ->assertFormSet([
+            'title' => 'Pelatihan Digital Karang Taruna',
+            'category' => NewsCategory::KARANG_TARUNA->value,
+            'content' => '<p>Materi pelatihan digital.</p>',
+        ]);
 });
