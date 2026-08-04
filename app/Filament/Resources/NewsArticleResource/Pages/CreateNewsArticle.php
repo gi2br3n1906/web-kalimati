@@ -28,12 +28,4 @@ class CreateNewsArticle extends CreateRecord
 
         return $data;
     }
-
-    protected function afterCreate(): void
-    {
-        $this->js(sprintf(
-            'localStorage.removeItem(%s)',
-            json_encode(NewsArticleResource::CONTENT_DRAFT_STORAGE_KEY, JSON_THROW_ON_ERROR),
-        ));
-    }
 }

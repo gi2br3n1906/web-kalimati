@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum NewsCategory: string
+use Filament\Support\Contracts\HasLabel;
+
+enum NewsCategory: string implements HasLabel
 {
     case KKN = 'kkn';
     case KARANG_TARUNA = 'karang_taruna';
@@ -17,6 +19,11 @@ enum NewsCategory: string
             self::KARANG_TARUNA => 'Karang Taruna',
             self::PEMDES => 'Pemerintah Desa',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 
     /**

@@ -87,7 +87,7 @@ it('denies kelompok tani access to phase two filament resources', function (): v
         ->assertForbidden();
 });
 
-it('renders the news article editor with publication controls and local draft protection', function (): void {
+it('renders the news article editor with native filament controls and no custom alpine wrapper', function (): void {
     $this->seed(DatabaseSeeder::class);
     $this->actingAs(phaseTwoUser(RoleType::SUPER_ADMIN));
 
@@ -100,11 +100,9 @@ it('renders the news article editor with publication controls and local draft pr
         ->assertSee('Foto Thumbnail')
         ->assertSee('Karang Taruna')
         ->assertSee('Pemerintah Desa')
-        ->assertSee('min-height: 550px;', false)
-        ->assertSee('news_draft_content', false)
-        ->assertSee('setInterval', false)
-        ->assertSee('$cleanup', false)
-        ->assertSee('5000', false);
+        ->assertSee('min-height: 500px;', false)
+        ->assertDontSee('news_draft_content', false)
+        ->assertDontSee('Ditemukan draft isi berita', false);
 
     $createPage = Livewire::test(CreateNewsArticle::class);
 

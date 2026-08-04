@@ -7,9 +7,15 @@ namespace App\Filament\Resources;
 use App\Enums\NewsCategory;
 use App\Filament\Resources\NewsArticleResource\Pages;
 use App\Models\NewsArticle;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Pages\PageRegistration;
 use Filament\Resources\RelationManagers\RelationManagerConfiguration;
@@ -20,8 +26,6 @@ use Illuminate\Support\Str;
 
 class NewsArticleResource extends Resource
 {
-    public const CONTENT_DRAFT_STORAGE_KEY = 'news_draft_content';
-
     protected static ?string $model = NewsArticle::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
@@ -38,102 +42,83 @@ class NewsArticleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Group::make([
-                    Forms\Components\Section::make('Informasi & Publikasi Artikel')
-                        ->schema([
-                            Forms\Components\Grid::make(3)
-                                ->schema([
-                                    Forms\Components\TextInput::make('title')
-                                        ->label('Judul Artikel')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->live(onBlur: true)
-                                        ->afterStateUpdated(static function (?string $state, Set $set): void {
-                                            $set('slug', Str::slug((string) $state));
-                                        })
-                                        ->columnSpan(2),
-                                    Forms\Components\TextInput::make('slug')
-                                        ->label('Slug URL')
-                                        ->required()
-                                        ->maxLength(255)
-                                        ->unique(ignoreRecord: true)
-                                        ->helperText('Digunakan pada URL artikel.')
-                                        ->columnSpan(1),
-                                ])
-                                ->columnSpanFull(),
-                            Forms\Components\Grid::make(3)
-                                ->schema([
-                                    Forms\Components\Select::make('category')
-                                        ->label('Kategori')
-                                        ->options([
-                                            'kkn' => 'KKN',
-                                            'karang_taruna' => 'Karang Taruna',
-                                            'pemdes' => 'Pemerintah Desa',
-                                        ])
-                                        ->required()
-                                        ->native(false)
-                                        ->searchable()
-                                        ->columnSpan(1),
-                                    Forms\Components\SpatieMediaLibraryFileUpload::make('thumbnail')
-                                        ->label('Foto Thumbnail')
-                                        ->collection(NewsArticle::THUMBNAIL_COLLECTION)
-                                        ->conversion('preview')
-                                        ->image()
-                                        ->imageEditor()
-                                        ->maxSize(5 * 1024)
-                                        ->columnSpan(1),
-                                    Forms\Components\Group::make([
-                                        Forms\Components\Toggle::make('is_published')
-                                            ->label('Terbitkan')
-                                            ->live()
-                                            ->default(false),
-                                        Forms\Components\DateTimePicker::make('published_at')
+                Section::make('Informasi & Publikasi Artikel')
+                    ->description('Atur judul, kategori, thumbnail, dan status terbit artikel.')
+                    ->schema([
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label('Judul Artikel')
+                                    ->placeholder('Masukkan judul berita...')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(static function (?string $state, Set $set): void {
+                                        $set('slug', Str::slug((string) $state));
+                                    })
+                                    ->columnSpan(2),
+                                TextInput::make('slug')
+                                    ->label('Slug URL')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true)
+                                    ->helperText('Otomatis terisi dari judul.')
+                                    ->columnSpan(1),
+                            ]),
+                        Grid::make(3)
+                            ->schema([
+                                Select::make('category')
+                                    ->label('Kategori')
+                                    ->options(NewsCategory::class)
+                                    ->required()
+                                    ->searchable()
+                                    ->preload(),
+                                SpatieMediaLibraryFileUpload::make('thumbnail')
+                                    ->label('Foto Thumbnail')
+                                    ->collection(NewsArticle::THUMBNAIL_COLLECTION)
+                                    ->conversion('preview')
+                                    ->image()
+                                    ->imageEditor()
+                                    ->maxSize(5 * 1024),
+                                Grid::make(1)
+                                    ->schema([
+                                        Toggle::make('is_published')
+                                            ->label('Terbitkan Langsung')
+                                            ->default(true),
+                                        DateTimePicker::make('published_at')
                                             ->label('Waktu Terbit')
                                             ->seconds(false)
-                                            ->required(static fn (Get $get): bool => (bool) $get('is_published')),
-                                    ])
-                                        ->columnSpan(1),
-                                ])
-                                ->columnSpanFull(),
-                        ])
-                        ->collapsible()
-                        ->columnSpanFull(),
-                    Forms\Components\Section::make('Isi Berita')
-                        ->schema([
-                            Forms\Components\RichEditor::make('content')
-                                ->hiddenLabel()
-                                ->required()
-                                ->extraAttributes([
-                                    'style' => 'min-height: 550px;',
-                                ])
-                                ->columnSpanFull(),
-                        ])
-                        ->columnSpanFull(),
-                ])
-                    ->extraAttributes([
-                        'x-data' => '{}',
-                        'x-init' => <<<'JS'
-                            if (window.location.pathname.endsWith('/create')) {
-                                const draftKey = 'news_draft_content';
-                                const savedDraft = localStorage.getItem(draftKey);
-
-                                if (savedDraft && confirm('Ditemukan draft isi berita yang belum tersimpan. Pulihkan draft?')) {
-                                    $wire.set('data.content', savedDraft);
-                                }
-
-                                const autosaveTimer = window.setInterval(() => {
-                                    const content = $wire.get('data.content');
-
-                                    if (typeof content === 'string' && content.trim() !== '') {
-                                        localStorage.setItem(draftKey, content);
-                                    } else {
-                                        localStorage.removeItem(draftKey);
-                                    }
-                                }, 5000);
-
-                                $cleanup(() => window.clearInterval(autosaveTimer));
-                            }
-                            JS,
+                                            ->default(now()),
+                                    ]),
+                            ]),
+                    ])
+                    ->collapsible()
+                    ->columnSpanFull(),
+                Section::make('Isi Berita')
+                    ->schema([
+                        RichEditor::make('content')
+                            ->hiddenLabel()
+                            ->required()
+                            ->columnSpanFull()
+                            ->toolbarButtons([
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'h2',
+                                'h3',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'underline',
+                                'undo',
+                                'attachFiles',
+                            ])
+                            ->extraInputAttributes([
+                                'style' => 'min-height: 500px;',
+                            ]),
                     ])
                     ->columnSpanFull(),
             ])
