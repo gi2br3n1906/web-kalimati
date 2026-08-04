@@ -2,10 +2,17 @@
 
 set -Eeuo pipefail
 
-readonly APP_ROOT="${APP_ROOT:-/var/www/desa-kalimati}"
+readonly SCRIPT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly APP_ROOT="${APP_ROOT:-$SCRIPT_ROOT}"
 readonly DEPLOY_BRANCH="${DEPLOY_BRANCH:-main}"
 
 cd "$APP_ROOT"
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+    echo "Deployment aborted: tracked local changes were found in $APP_ROOT." >&2
+    git status --short >&2
+    exit 1
+fi
 
 php artisan down || true
 
@@ -15,8 +22,8 @@ cleanup() {
 
 trap cleanup EXIT
 
-git pull origin "$DEPLOY_BRANCH"
-composer install --no-dev --optimize-autoloader --no-interaction
+git pull --ff-only origin "$DEPLOY_BRANCH"
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction
 php artisan optimize:clear
 php artisan filament:assets
 
@@ -42,7 +49,7 @@ php artisan route:cache
 php artisan view:cache
 php artisan icons:cache
 php artisan filament:cache-components
-npm ci
+npm ci --no-audit --no-fund --progress=false
 npm run build
 
 if [[ ! -s "public/build/manifest.json" ]]; then
