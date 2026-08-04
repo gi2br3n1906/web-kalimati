@@ -9,6 +9,7 @@ enum PoiCategory: string
     case PEMERINTAHAN = 'pemerintahan';
     case FASILITAS_UMUM = 'fasilitas_umum';
     case PENDIDIKAN = 'pendidikan';
+    case PERTANIAN_IOT = 'pertanian_iot';
     case IBADAH = 'ibadah';
     case POSYANDU = 'posyandu';
 
@@ -18,6 +19,7 @@ enum PoiCategory: string
             self::PEMERINTAHAN => 'Pemerintahan',
             self::FASILITAS_UMUM => 'Fasilitas Umum',
             self::PENDIDIKAN => 'Pendidikan',
+            self::PERTANIAN_IOT => 'Pertanian / IoT',
             self::IBADAH => 'Tempat Ibadah',
             self::POSYANDU => 'Posyandu',
         };
@@ -29,6 +31,7 @@ enum PoiCategory: string
             self::PEMERINTAHAN => 'building-government',
             self::FASILITAS_UMUM => 'landmark',
             self::PENDIDIKAN => 'school',
+            self::PERTANIAN_IOT => 'agriculture-iot',
             self::IBADAH => 'place-of-worship',
             self::POSYANDU => 'health-center',
         };
@@ -57,6 +60,7 @@ enum PoiCategory: string
             'building-government' => 'Kantor Pemerintahan',
             'landmark' => 'Fasilitas Umum',
             'school' => 'Sekolah',
+            'agriculture-iot' => 'Pertanian / IoT',
             'place-of-worship' => 'Tempat Ibadah',
             'health-center' => 'Pusat Kesehatan',
         ];

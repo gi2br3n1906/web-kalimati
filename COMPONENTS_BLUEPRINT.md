@@ -26,6 +26,7 @@
 - Resource: `App\Filament\Resources\GisPointOfInterestResource`
   - Navigation Group: `Web GIS`
   - Form Schema: Name, Category (Enum), Latitude, Longitude, Description, Icon Marker Picker.
+  - Header Action: `Import KML Google Earth` untuk bulk import Placemark Point/Polygon dari KML, KMZ, atau XML dengan kategori default.
 
 ### D. KKN Research Hub
 - Resource: `App\Filament\Resources\ResearchFileResource`
@@ -71,6 +72,12 @@
 - `App\Actions\Umkm\CalculateLedgerSummaryAction`
   - Mengkalkulasi total pemasukan, pengeluaran, dan net cash-flow untuk usaha UMKM tertentu dalam rentang periode tanggal.
 
+### C. Domain Web GIS
+- `App\Services\GisKmlParserService`
+  - Memvalidasi dan membaca KML/KMZ Google Earth, lalu menormalisasi Placemark Point/Polygon menjadi GeoJSON tanpa mengekstrak arsip ke filesystem.
+- `App\Actions\Gis\ImportKmlLocationsAction`
+  - Menyimpan hasil parsing secara atomik melalui chunked bulk insert menggunakan kategori default yang dipilih admin.
+
 ---
 
 ## 4. API Controllers & Webhooks
@@ -85,7 +92,7 @@
 ## 5. Strongly Typed Enums (PHP 8.2+)
 
 - `App\Enums\CommodityType`: `JAGUNG = 'jagung'`, `PISANG = 'pisang'`, `SINGKONG = 'singkong'`, `LAINNYA = 'lainnya'`
-- `App\Enums\PoiCategory`: `PEMERINTAHAN = 'pemerintahan'`, `FASILITAS_UMUM = 'fasilitas_umum'`, `PENDIDIKAN = 'pendidikan'`, `IBADAH = 'ibadah'`, `POSYANDU = 'posyandu'`
+- `App\Enums\PoiCategory`: `PEMERINTAHAN = 'pemerintahan'`, `FASILITAS_UMUM = 'fasilitas_umum'`, `PENDIDIKAN = 'pendidikan'`, `PERTANIAN_IOT = 'pertanian_iot'`, `IBADAH = 'ibadah'`, `POSYANDU = 'posyandu'`
 - `App\Enums\ResearchCategory`: `MONOGRAFI = 'monografi'`, `SAINTEK = 'saintek'`, `SOSHUM = 'soshum'`, `PETA = 'peta'`, `LAPORAN_KKN = 'laporan_kkn'`
 - `App\Enums\LedgerType`: `INCOME = 'income'`, `EXPENSE = 'expense'`
 - `App\Enums\RoleType`: `SUPER_ADMIN = 'super_admin'`, `ADMIN_DESA = 'admin_desa'`, `KELOMPOK_TANI = 'kelompok_tani'`, `UMKM = 'umkm'`, `WARGA = 'warga'`

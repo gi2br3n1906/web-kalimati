@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class GisPointOfInterestResource extends JsonResource
 {
     /**
-     * @return array<string, int|float|string|null>
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
@@ -26,6 +26,7 @@ class GisPointOfInterestResource extends JsonResource
             'longitude' => (float) $this->longitude,
             'description' => $this->description,
             'icon_marker' => $this->icon_marker,
+            'geometry' => $this->mapGeometry(),
         ];
     }
 }

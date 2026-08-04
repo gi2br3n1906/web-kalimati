@@ -28,9 +28,38 @@ it('returns points of interest using the public gis response contract', function
                     'longitude' => 110.8234,
                     'description' => 'Pusat pelayanan administrasi Desa Kalimati',
                     'icon_marker' => 'building-government',
+                    'geometry' => [
+                        'type' => 'Point',
+                        'coordinates' => [110.8234, -7.2145],
+                    ],
                 ],
             ],
         ]);
+});
+
+it('returns imported polygon geometry through the public gis endpoint', function (): void {
+    GisPointOfInterest::factory()->create([
+        'name' => 'Area Pertanian Dampit',
+        'category' => PoiCategory::PERTANIAN_IOT,
+        'latitude' => -7.212,
+        'longitude' => 110.822,
+        'geojson_geometry' => [
+            'type' => 'Polygon',
+            'coordinates' => [[
+                [110.8200, -7.2100],
+                [110.8240, -7.2100],
+                [110.8240, -7.2140],
+                [110.8200, -7.2140],
+                [110.8200, -7.2100],
+            ]],
+        ],
+    ]);
+
+    $this->getJson('/api/v1/gis/points-of-interest?category=pertanian_iot')
+        ->assertOk()
+        ->assertJsonPath('data.0.name', 'Area Pertanian Dampit')
+        ->assertJsonPath('data.0.geometry.type', 'Polygon')
+        ->assertJsonCount(5, 'data.0.geometry.coordinates.0');
 });
 
 it('filters points of interest by category', function (): void {

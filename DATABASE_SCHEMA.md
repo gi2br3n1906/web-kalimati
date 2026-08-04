@@ -102,11 +102,12 @@ LLM/RAG generated reasoning and treatment recommendations[cite: 1].
 | :--- | :--- | :--- |
 | `id` | BIGINT UNSIGNED | PK |
 | `name` | VARCHAR(255) | Feature name (e.g., `'Balai Desa Kalimati'`, `'SDN 02 Kalimati'`)[cite: 1] |
-| `category` | ENUM | `'pemerintahan'`, `'fasilitas_umum'`, `'pendidikan'`, `'ibadah'`, `'posyandu'`[cite: 1] |
+| `category` | VARCHAR(50) | Application enum: `'pemerintahan'`, `'fasilitas_umum'`, `'pendidikan'`, `'pertanian_iot'`, `'ibadah'`, `'posyandu'`[cite: 1] |
 | `latitude` | DECIMAL(10,8) | |
 | `longitude` | DECIMAL(11,8) | |
 | `description` | TEXT | Nullable detail text |
 | `icon_marker` | VARCHAR(100) | Nullable icon identifier for map rendering |
+| `geojson_geometry` | JSON | Nullable GeoJSON Point/Polygon imported from KML/KMZ; latitude/longitude store the point or polygon centroid |
 | `timestamps` | TIMESTAMP | |
 
 ---

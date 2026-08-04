@@ -100,6 +100,10 @@ class GisPointOfInterestResource extends Resource
                     ->formatStateUsing(static fn (PoiCategory $state): string => $state->label())
                     ->badge()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('geometry_type')
+                    ->label('Tipe Geometri')
+                    ->state(static fn (GisPointOfInterest $record): string => $record->geometryTypeLabel())
+                    ->badge(),
                 Tables\Columns\TextColumn::make('latitude')
                     ->label('Latitude')
                     ->numeric(decimalPlaces: 8),

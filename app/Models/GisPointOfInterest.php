@@ -24,7 +24,31 @@ class GisPointOfInterest extends Model
         'longitude',
         'description',
         'icon_marker',
+        'geojson_geometry',
     ];
+
+    /**
+     * @return array{type: string, coordinates: array<mixed>}
+     */
+    public function mapGeometry(): array
+    {
+        if (is_array($this->geojson_geometry)) {
+            return $this->geojson_geometry;
+        }
+
+        return [
+            'type' => 'Point',
+            'coordinates' => [
+                (float) $this->longitude,
+                (float) $this->latitude,
+            ],
+        ];
+    }
+
+    public function geometryTypeLabel(): string
+    {
+        return $this->mapGeometry()['type'] === 'Polygon' ? 'Area / Polygon' : 'Titik / Marker';
+    }
 
     /**
      * @return array<string, string>
@@ -35,6 +59,7 @@ class GisPointOfInterest extends Model
             'category' => PoiCategory::class,
             'latitude' => 'float',
             'longitude' => 'float',
+            'geojson_geometry' => 'array',
         ];
     }
 }

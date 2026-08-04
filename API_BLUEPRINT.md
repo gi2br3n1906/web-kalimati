@@ -97,7 +97,7 @@ Expected Inbound Response Schema (200 OK):
 - Method: GET
 - Path: /api/v1/gis/points-of-interest
 - Query Parameters:
-  - category (optional): pemerintahan, fasilitas_umum, pendidikan, ibadah, posyandu
+  - category (optional): pemerintahan, fasilitas_umum, pendidikan, pertanian_iot, ibadah, posyandu
 
 Response (200 OK):
 {
@@ -110,7 +110,11 @@ Response (200 OK):
       "latitude": -7.21450000,
       "longitude": 110.82340000,
       "description": "Pusat pelayanan administrasi Desa Kalimati",
-      "icon_marker": "building-government"
+      "icon_marker": "building-government",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [110.82340000, -7.21450000]
+      }
     }
   ]
 }

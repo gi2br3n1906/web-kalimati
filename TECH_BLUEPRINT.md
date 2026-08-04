@@ -88,7 +88,8 @@ MAIL_PORT=2525
 To ensure smooth operation, the host server (VPS) must have the following PHP extensions enabled:
 - `pdo_mysql` or `pdo_pgsql`
 - `mbstring`
-- `xml` / `ctype` / `iconv`
+- `dom` / `xml` / `ctype` / `iconv` (KML XML parsing and framework requirements)
+- `zip` (KMZ archive import from Google Earth)
 - `gd` or `imagick` (For image thumbnail generation and avatar resizing)
 - `curl` (For HTTP API communications to LLM service)
 - `fileinfo` (For MIME-type verification on PDF/Document uploads in Research Hub)[cite: 1]

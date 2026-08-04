@@ -29,7 +29,7 @@
         </a>
     </header>
 
-    <section class="gis-map-stage" aria-label="Peta interaktif titik lokasi Desa Kalimati">
+    <section class="gis-map-stage" aria-label="Peta interaktif lokasi dan area Desa Kalimati">
         <div class="gis-map-canvas" data-map-canvas wire:ignore></div>
 
         <div class="gis-status" data-map-status role="status" aria-live="polite">

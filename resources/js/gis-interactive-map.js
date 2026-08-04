@@ -5,6 +5,7 @@ const categoryColors = {
     pemerintahan: '#155e75',
     fasilitas_umum: '#7c3aed',
     pendidikan: '#1d4ed8',
+    pertanian_iot: '#15803d',
     ibadah: '#a16207',
     posyandu: '#be123c',
 };
@@ -13,6 +14,7 @@ const markerSymbols = {
     'building-government': 'G',
     landmark: 'F',
     school: 'S',
+    'agriculture-iot': 'T',
     'place-of-worship': 'I',
     'health-center': 'P',
 };
@@ -21,6 +23,7 @@ const categoryLabels = {
     pemerintahan: 'Pemerintahan',
     fasilitas_umum: 'Fasilitas Umum',
     pendidikan: 'Pendidikan',
+    pertanian_iot: 'Pertanian / IoT',
     ibadah: 'Tempat Ibadah',
     posyandu: 'Posyandu',
 };
@@ -77,7 +80,7 @@ const initializeMap = (root) => {
     const map = L.map(canvas, {
         zoomControl: false,
     }).setView(configuration.center, configuration.zoom);
-    const markerLayer = L.layerGroup().addTo(map);
+    const featureLayer = L.layerGroup().addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.tileLayer(configuration.tileProvider, {
@@ -92,24 +95,47 @@ const initializeMap = (root) => {
         count.hidden = true;
     };
 
-    const renderPoints = (points) => {
-        markerLayer.clearLayers();
+    const renderFeatures = (points) => {
+        featureLayer.clearLayers();
 
-        const bounds = [];
+        const bounds = L.latLngBounds();
 
         points.forEach((point) => {
-            const coordinates = [point.latitude, point.longitude];
+            const geometry = point.geometry ?? {
+                type: 'Point',
+                coordinates: [point.longitude, point.latitude],
+            };
+
+            if (geometry.type === 'Polygon') {
+                const color = categoryColors[point.category] ?? '#166534';
+                const polygon = L.geoJSON(geometry, {
+                    style: {
+                        color,
+                        fillColor: color,
+                        fillOpacity: 0.24,
+                        weight: 3,
+                    },
+                });
+
+                polygon.bindPopup(makePopup(point));
+                polygon.addTo(featureLayer);
+                bounds.extend(polygon.getBounds());
+
+                return;
+            }
+
+            const coordinates = [geometry.coordinates[1], geometry.coordinates[0]];
             const marker = L.marker(coordinates, {
                 icon: makeMarkerIcon(point),
                 title: point.name,
             });
 
             marker.bindPopup(makePopup(point));
-            marker.addTo(markerLayer);
-            bounds.push(coordinates);
+            marker.addTo(featureLayer);
+            bounds.extend(coordinates);
         });
 
-        if (bounds.length > 0) {
+        if (bounds.isValid()) {
             map.fitBounds(bounds, {
                 padding: [56, 56],
                 maxZoom: 16,
@@ -121,7 +147,7 @@ const initializeMap = (root) => {
             status.textContent = 'Belum ada titik lokasi pada kategori ini.';
         }
 
-        count.textContent = `${points.length} titik lokasi`;
+        count.textContent = `${points.length} fitur lokasi`;
         count.hidden = false;
     };
 
@@ -147,9 +173,9 @@ const initializeMap = (root) => {
 
             const payload = await response.json();
 
-            renderPoints(payload.data);
+            renderFeatures(payload.data);
         } catch (error) {
-            markerLayer.clearLayers();
+            featureLayer.clearLayers();
             status.hidden = false;
             status.classList.add('is-error');
             status.textContent = 'Data peta tidak dapat dimuat.';

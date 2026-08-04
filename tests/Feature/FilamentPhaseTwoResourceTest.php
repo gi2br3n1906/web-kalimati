@@ -49,7 +49,8 @@ it('allows super admin to access phase two filament resources', function (): voi
         ->assertOk();
 
     $this->get('/admin/gis-point-of-interests')
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('Import KML Google Earth');
 
     $this->get('/admin/gis-point-of-interests/create')
         ->assertOk();
@@ -85,6 +86,18 @@ it('denies kelompok tani access to phase two filament resources', function (): v
 
     $this->get('/admin/gis-point-of-interests')
         ->assertForbidden();
+});
+
+it('hides GIS write actions without the create point permission', function (): void {
+    $this->seed(DatabaseSeeder::class);
+
+    $adminRole = Role::findByName(RoleType::ADMIN_DESA->value, 'web');
+    $adminRole->revokePermissionTo('create_gis::point::of::interest');
+
+    $this->actingAs(phaseTwoUser(RoleType::ADMIN_DESA))
+        ->get('/admin/gis-point-of-interests')
+        ->assertOk()
+        ->assertDontSee('Import KML Google Earth');
 });
 
 it('renders the news article editor with native filament controls and no custom alpine wrapper', function (): void {
