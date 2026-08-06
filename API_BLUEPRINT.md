@@ -54,6 +54,16 @@ Validation Error Response (422 Unprocessable Entity):
 
 ## 3. LLM / RAG Soil Recommendation Service Integration
 
+### Endpoint Per-Device Agricultural Monitoring
+- Method: `POST`
+- Path: `/api/v1/telemetry`
+- Header: `X-Device-Token` (token unik dari `iot_devices`)
+- Payload: `temp_air`, `hum_air`, `temp_soil`, `hum_soil_percent`, `raw_soil`, `lux_light`.
+- Response: HTTP `200`; telemetry disimpan dan `ProcessTelemetryAiReasoning` didispatch ke queue setelah transaksi commit.
+- Token invalid, kosong, atau perangkat nonaktif mengembalikan HTTP `401`.
+
+Endpoint legacy `/api/v1/iot/telemetry` tetap dipertahankan untuk sensor grid pH lama.
+
 Komunikasi outbound dari Laravel Service (FetchLLMRecommendationAction) ke Python FastAPI / Ollama RAG Engine.
 
 ### Endpoint Outbound: Request Soil Analysis & Action Plan
@@ -92,6 +102,12 @@ Expected Inbound Response Schema (200 OK):
 ---
 
 ## 4. Public Web GIS Endpoints
+
+### Endpoint IoT Devices
+- Method: GET
+- Path: `/api/v1/gis/iot-devices`
+- Mengembalikan perangkat aktif, koordinat, radius, telemetry terbaru, dan rekomendasi AI terbaru.
+- `api_token` dan `api_token_hash` tidak pernah diekspos.
 
 ### Endpoint 1: Get Points of Interest (POIs)
 - Method: GET

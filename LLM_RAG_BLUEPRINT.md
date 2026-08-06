@@ -62,3 +62,14 @@ USER / FARMER HISTORICAL TREATMENTS:
 3. Fallback Rules:
    - Jika `ph_level` bernilai `0` atau `null` (sensor rusak/offline), kembalikan pesan fallback: "Data sensor tanah tidak valid. Harap periksa koneksi perangkat IoT di lahan."
    - Jangan pernah menebak-nebak dosis obat kimia dosis tinggi tanpa data pendukung yang valid.
+
+### IoT Spatial Monitoring JSON Contract
+Untuk `IotAiReasoningService`, konteks lokal wajib mencakup sawah 100% tadah hujan, Jagung & Pisang tumpang sari, serta hama Tikus, Ulat Grayak, Bule, dan Engkok (Uret). Output wajib JSON:
+
+```json
+{
+  "condition_status": "optimal|caution|warning|critical",
+  "action_title": "Judul tindakan ringkas",
+  "recommendation_text": "Narasi tindakan aman dan praktis"
+}
+```

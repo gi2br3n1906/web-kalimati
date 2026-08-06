@@ -93,6 +93,42 @@ LLM/RAG generated reasoning and treatment recommendations[cite: 1].
 | `is_applied` | BOOLEAN | Status if farmer implemented recommendation |
 | `timestamps` | TIMESTAMP | |
 
+#### `iot_devices`
+Perangkat monitoring pertanian spasial dengan kredensial unik per perangkat.
+
+| Column | Type | Constraints / Details |
+| :--- | :--- | :--- |
+| `id` | BIGINT UNSIGNED | PK |
+| `device_code` | VARCHAR(100) | Unique hardware identifier |
+| `name` | VARCHAR(255) | Nama perangkat |
+| `api_token` | VARCHAR(512) | Unique ciphertext, encrypted at rest |
+| `api_token_hash` | CHAR(64) | Unique SHA-256 lookup hash; internal only |
+| `latitude` / `longitude` | DECIMAL(10,8) / DECIMAL(11,8) | Titik perangkat |
+| `coverage_radius_meters` | INT UNSIGNED | Default 100 meter |
+| `crop_type` | VARCHAR(100) | Default `Jagung` |
+| `is_active` | BOOLEAN | Default true |
+| `last_active_at` | TIMESTAMP | Nullable, indexed |
+
+#### `iot_telemetries`
+| Column | Type | Constraints / Details |
+| :--- | :--- | :--- |
+| `iot_device_id` | BIGINT UNSIGNED | FK, cascade delete |
+| `temp_air`, `hum_air` | FLOAT | Suhu dan kelembapan udara |
+| `temp_soil`, `hum_soil_percent` | FLOAT | Suhu dan kelembapan tanah |
+| `raw_soil` | INT | Pembacaan analog mentah |
+| `lux_light` | FLOAT | Intensitas cahaya (lux) |
+| `timestamps` | TIMESTAMP | Indexed bersama device ID |
+
+#### `ai_recommendations`
+| Column | Type | Constraints / Details |
+| :--- | :--- | :--- |
+| `iot_device_id` | BIGINT UNSIGNED | FK, cascade delete |
+| `iot_telemetry_id` | BIGINT UNSIGNED | FK, cascade delete |
+| `condition_status` | ENUM | `optimal`, `caution`, `warning`, `critical` |
+| `action_title` | VARCHAR(255) | Judul tindakan |
+| `recommendation_text` | TEXT | Narasi Gemini/fallback |
+| `timestamps` | TIMESTAMP | Indexed per device/status |
+
 ---
 
 ### D. Web GIS & Spatial Layers

@@ -505,6 +505,48 @@
         line-height: 1.5;
     }
 
+    .gis-iot-popup {
+        width: min(280px, 70vw);
+    }
+
+    .gis-iot-popup h3 {
+        margin: 12px 0 0;
+        color: #1c1917;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.4;
+        letter-spacing: 0;
+    }
+
+    .gis-iot-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        margin: 12px 0 0;
+    }
+
+    .gis-iot-metrics div {
+        min-width: 0;
+        padding: 7px;
+        border: 1px solid #e7e5e4;
+        border-radius: 4px;
+        background: #fafaf9;
+    }
+
+    .gis-iot-metrics dt {
+        color: #78716c;
+        font-size: 10px;
+        line-height: 1.25;
+    }
+
+    .gis-iot-metrics dd {
+        margin: 3px 0 0;
+        color: #1c1917;
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.25;
+    }
+
     .leaflet-popup-content-wrapper,
     .leaflet-popup-tip {
         border-radius: 6px;

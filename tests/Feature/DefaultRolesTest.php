@@ -34,7 +34,17 @@ class DefaultRolesTest extends TestCase
         $superAdmin = Role::findByName(RoleType::SUPER_ADMIN->value, 'web');
         $permissions = Permission::query()->orderBy('name')->pluck('name')->all();
 
-        $this->assertCount(102, $permissions);
+        $this->assertCount(108, $permissions);
         $this->assertTrue($superAdmin->hasAllPermissions($permissions));
+
+        $farmerRole = Role::findByName(RoleType::KELOMPOK_TANI->value, 'web');
+        $this->assertTrue($farmerRole->hasAllPermissions([
+            'view_any_iot::device',
+            'view_iot::device',
+            'create_iot::device',
+            'update_iot::device',
+            'delete_iot::device',
+            'delete_any_iot::device',
+        ]));
     }
 }

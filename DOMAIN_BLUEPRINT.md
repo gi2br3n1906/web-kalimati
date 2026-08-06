@@ -43,6 +43,7 @@ Primary Objectives:
   - Soil pH[cite: 1]
   - Soil Moisture (%)[cite: 1]
   - Soil Temperature (°C)[cite: 1]
+  - Air temperature/humidity, raw soil reading, and light intensity for spatial devices.
 - **Automated LLM/RAG Recommendation**:
   - Processing sensor data against localized agricultural knowledge bases[cite: 1].
   - Automated calculation and reasoning for dosage of fertilizer, lime treatment, or crop rotation tips[cite: 1].
@@ -72,6 +73,8 @@ Primary Objectives:
 │
 ▼ (returns reasoning & action plan)
 [ Save to land_recommendations ] ──► [ Render on Grid Map UI & Filament Admin ]
+
+Pipeline perangkat spasial: `IotDevice` -> `POST /api/v1/telemetry` -> `IotTelemetry` -> queued `ProcessTelemetryAiReasoning` -> `AiRecommendation` -> Leaflet `/peta` dan `/pertanian`.
 
 
 ### B. Research & Monograph Publishing Pipeline

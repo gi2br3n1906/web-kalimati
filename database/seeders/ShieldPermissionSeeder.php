@@ -58,6 +58,12 @@ final class ShieldPermissionSeeder extends Seeder
      * @var array<int, string>
      */
     private const PHASE_THREE_RESOURCE_PERMISSIONS = [
+        'view_iot::device',
+        'view_any_iot::device',
+        'create_iot::device',
+        'update_iot::device',
+        'delete_iot::device',
+        'delete_any_iot::device',
         'view_land::grid',
         'view_any_land::grid',
         'create_land::grid',

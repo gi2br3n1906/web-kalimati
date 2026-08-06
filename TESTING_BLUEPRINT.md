@@ -31,6 +31,10 @@
    - Assert HTTP Status `422 Unprocessable Entity`.
    - Assert error key `ph_level` ada pada response validation.
 
+4. Per-device monitoring (`/api/v1/telemetry`):
+   - Validasi `X-Device-Token`, perangkat aktif, penyimpanan `iot_telemetries`, update `last_active_at`, dan dispatch queued AI job.
+   - Verifikasi public IoT GIS payload tidak mengekspos token serta `/peta` dan `/pertanian` memuat konfigurasi layer IoT.
+
 ---
 
 ### Scenario B: LLM / RAG Service Integration & Fallback Handling

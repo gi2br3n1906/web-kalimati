@@ -21,6 +21,9 @@
 - Resource: `App\Filament\Resources\LandRecommendationResource`
   - Navigation Group: `Smart Agriculture`
   - View / Form: Diagnostic Summary, Recommended Fertilizer Dosage, Lime Treatment (Dolomit), Action Plan, Implementation Status Toggle (`is_applied`).
+- Resource: `App\Filament\Resources\IotDeviceResource`
+  - Form: nama, kode perangkat, token otomatis, koordinat, radius, komoditas, status aktif.
+  - Relation managers: histori telemetry dan riwayat rekomendasi AI.
 
 ### C. Web GIS & Geotagging
 - Resource: `App\Filament\Resources\GisPointOfInterestResource`
@@ -48,7 +51,9 @@
 - `App\Livewire\Public\LandingPage`
   - Component view untuk halaman utama: Hero Section, Running News, Quick GIS Preview, dan Profil Singkat Desa.
 - `App\Livewire\Public\GisInteractiveMap`
-  - Component peta interaktif Leaflet.js full-screen dengan toggle layer POI & Grid Tanah 10x10m.
+  - Component peta interaktif Leaflet.js full-screen dengan POI serta marker/radius perangkat IoT berwarna sesuai status AI.
+- `App\Livewire\Public\AgricultureIndex`
+  - Menampilkan embedded Leaflet map perangkat IoT aktif beserta telemetry dan rekomendasi terbaru.
 - `App\Livewire\Public\SmartAgri\GridCatalog`
   - Katalogue visual plot tanah 10x10m dengan filter per dusun dan komoditas, disertai popup ringkasan kesehatan tanah.
 - `App\Livewire\Public\ResearchHub\ArchiveIndex`
@@ -72,6 +77,12 @@
 - `App\Actions\Umkm\CalculateLedgerSummaryAction`
   - Mengkalkulasi total pemasukan, pengeluaran, dan net cash-flow untuk usaha UMKM tertentu dalam rentang periode tanggal.
 
+### D. Domain IoT Monitoring
+- `App\Services\IotAiReasoningService`
+  - Mengirim telemetry terstruktur dan konteks tadah hujan, tumpang sari, serta hama lokal Kalimati ke Gemini.
+- `App\Jobs\ProcessTelemetryAiReasoning`
+  - Memproses AI secara asynchronous dengan retry dan fallback rekomendasi aman.
+
 ### C. Domain Web GIS
 - `App\Services\GisKmlParserService`
   - Memvalidasi dan membaca KML/KMZ Google Earth, lalu menormalisasi Placemark Point/Polygon menjadi GeoJSON tanpa mengekstrak arsip ke filesystem.
@@ -85,7 +96,9 @@
 - `App\Http\Controllers\Api\V1\IotTelemetryController`
   - Endpoint `POST /api/v1/iot/telemetry`: Menangani pesan masuk dari sensor IoT tanah.
 - `App\Http\Controllers\Api\V1\GisDataController`
-  - Endpoint `GET /api/v1/gis/points-of-interest` & `GET /api/v1/gis/land-grids`: Menyediakan data GeoJSON/JSON untuk frontend map.
+  - Endpoint POI serta `GET /api/v1/gis/iot-devices` untuk frontend map.
+- `App\Http\Controllers\Api\IotTelemetryController`
+  - Endpoint `POST /api/v1/telemetry` dengan autentikasi `X-Device-Token` per perangkat.
 
 ---
 
@@ -96,3 +109,4 @@
 - `App\Enums\ResearchCategory`: `MONOGRAFI = 'monografi'`, `SAINTEK = 'saintek'`, `SOSHUM = 'soshum'`, `PETA = 'peta'`, `LAPORAN_KKN = 'laporan_kkn'`
 - `App\Enums\LedgerType`: `INCOME = 'income'`, `EXPENSE = 'expense'`
 - `App\Enums\RoleType`: `SUPER_ADMIN = 'super_admin'`, `ADMIN_DESA = 'admin_desa'`, `KELOMPOK_TANI = 'kelompok_tani'`, `UMKM = 'umkm'`, `WARGA = 'warga'`
+- `App\Enums\AiConditionStatus`: `OPTIMAL`, `CAUTION`, `WARNING`, `CRITICAL`.

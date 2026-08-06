@@ -33,7 +33,7 @@
         <div class="gis-map-canvas" data-map-canvas wire:ignore></div>
 
         <div class="gis-status" data-map-status role="status" aria-live="polite">
-            Memuat titik lokasi...
+            Memuat titik lokasi dan perangkat IoT...
         </div>
 
         <div class="gis-count" data-map-count hidden></div>
