@@ -11,7 +11,8 @@ class IotDevicePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_iot::device');
+        return $user->hasAnyRole(['super_admin', 'kelompok_tani'])
+            || $user->can('view_any_iot::device');
     }
 
     public function view(User $user, IotDevice $device): bool

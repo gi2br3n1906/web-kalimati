@@ -35,6 +35,19 @@ it('allows kelompok tani to access smart agriculture filament resources', functi
         ->assertSee('Riwayat Rekomendasi AI');
 });
 
+it('allows super admin to access and see the iot device resource', function (): void {
+    $this->seed(DatabaseSeeder::class);
+
+    $this->actingAs(agricultureUser(RoleType::SUPER_ADMIN))
+        ->get('/admin/iot-devices')
+        ->assertOk()
+        ->assertSee('Perangkat IoT');
+
+    $this->get('/admin')
+        ->assertOk()
+        ->assertSee('Perangkat IoT');
+});
+
 it('denies warga access to smart agriculture filament resources', function (): void {
     $this->seed(DatabaseSeeder::class);
 

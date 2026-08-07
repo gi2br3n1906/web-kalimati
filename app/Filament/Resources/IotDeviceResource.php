@@ -23,13 +23,15 @@ class IotDeviceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cpu-chip';
 
-    protected static ?string $navigationGroup = 'Smart Agriculture';
+    protected static ?string $navigationGroup = 'Manajemen Pertanian';
 
     protected static ?string $modelLabel = 'Perangkat IoT';
 
     protected static ?string $pluralModelLabel = 'Perangkat IoT';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
+
+    protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form
     {
