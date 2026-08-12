@@ -67,4 +67,12 @@ class LandGrid extends Model
     {
         return $this->hasMany(LandRecommendation::class);
     }
+
+    /**
+     * @return HasMany<IotDevice, $this>
+     */
+    public function iotDevices(): HasMany
+    {
+        return $this->hasMany(IotDevice::class);
+    }
 }

@@ -98,6 +98,7 @@ Perangkat monitoring pertanian spasial dengan kredensial unik per perangkat.
 
 | Column | Type | Constraints / Details |
 | :--- | :--- | :--- |
+| `land_grid_id` | BIGINT UNSIGNED | FK nullable -> `land_grids.id`; otomatis menunjuk grid aktif terdekat |
 | `id` | BIGINT UNSIGNED | PK |
 | `device_code` | VARCHAR(100) | Unique hardware identifier |
 | `name` | VARCHAR(255) | Nama perangkat |
@@ -112,6 +113,8 @@ Perangkat monitoring pertanian spasial dengan kredensial unik per perangkat.
 #### `iot_telemetries`
 | Column | Type | Constraints / Details |
 | :--- | :--- | :--- |
+| `latitude` | DECIMAL(10,8) | Snapshot latitude saat telemetry diterima |
+| `longitude` | DECIMAL(11,8) | Snapshot longitude saat telemetry diterima |
 | `iot_device_id` | BIGINT UNSIGNED | FK, cascade delete |
 | `temp_air`, `hum_air` | FLOAT | Suhu dan kelembapan udara |
 | `temp_soil`, `hum_soil_percent` | FLOAT | Suhu dan kelembapan tanah |

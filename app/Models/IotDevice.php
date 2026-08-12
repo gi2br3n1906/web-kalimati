@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -16,6 +17,7 @@ class IotDevice extends Model
 
     /** @var array<int, string> */
     protected $fillable = [
+        'land_grid_id',
         'device_code',
         'name',
         'api_token',
@@ -92,5 +94,11 @@ class IotDevice extends Model
     public function latestRecommendation(): HasOne
     {
         return $this->hasOne(AiRecommendation::class)->latestOfMany();
+    }
+
+    /** @return BelongsTo<LandGrid, $this> */
+    public function landGrid(): BelongsTo
+    {
+        return $this->belongsTo(LandGrid::class);
     }
 }

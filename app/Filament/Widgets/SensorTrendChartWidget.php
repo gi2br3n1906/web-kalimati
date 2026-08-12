@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Widgets;
 
-use App\Models\SensorLog;
+use App\Models\IotTelemetry;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Collection;
 
@@ -23,16 +23,16 @@ class SensorTrendChartWidget extends ChartWidget
 
     protected function getData(): array
     {
-        /** @var Collection<int, SensorLog> $logs */
-        $logs = SensorLog::query()->latestRecorded()->limit(24)->get()->reverse()->values();
+        /** @var Collection<int, IotTelemetry> $logs */
+        $logs = IotTelemetry::query()->latest()->limit(24)->get()->reverse()->values();
 
         return [
             'datasets' => [
-                ['label' => 'pH', 'data' => $logs->pluck('ph_level')->all(), 'borderColor' => '#2563eb', 'backgroundColor' => 'rgb(37 99 235 / 15%)', 'tension' => 0.3],
-                ['label' => 'Kelembapan (%)', 'data' => $logs->pluck('moisture_percentage')->all(), 'borderColor' => '#15803d', 'backgroundColor' => 'rgb(21 128 61 / 15%)', 'tension' => 0.3],
-                ['label' => 'Suhu (C)', 'data' => $logs->pluck('temperature_celsius')->all(), 'borderColor' => '#b45309', 'backgroundColor' => 'rgb(180 83 9 / 15%)', 'tension' => 0.3],
+                ['label' => 'Suhu Udara (C)', 'data' => $logs->pluck('temp_air')->all(), 'borderColor' => '#b45309', 'backgroundColor' => 'rgb(180 83 9 / 15%)', 'tension' => 0.3],
+                ['label' => 'Kelembapan Udara (%)', 'data' => $logs->pluck('hum_air')->all(), 'borderColor' => '#2563eb', 'backgroundColor' => 'rgb(37 99 235 / 15%)', 'tension' => 0.3],
+                ['label' => 'Kelembapan Tanah (%)', 'data' => $logs->pluck('hum_soil_percent')->all(), 'borderColor' => '#15803d', 'backgroundColor' => 'rgb(21 128 61 / 15%)', 'tension' => 0.3],
             ],
-            'labels' => $logs->map(static fn (SensorLog $log): string => $log->recorded_at->format('d M H:i'))->all(),
+            'labels' => $logs->map(static fn (IotTelemetry $log): string => $log->created_at->format('d M H:i'))->all(),
         ];
     }
 

@@ -18,6 +18,8 @@ class IotTelemetryFactory extends Factory
     {
         return [
             'iot_device_id' => IotDevice::factory(),
+            'latitude' => -7.21450000,
+            'longitude' => 110.72340000,
             'temp_air' => 29.4,
             'hum_air' => 72.5,
             'temp_soil' => 27.2,

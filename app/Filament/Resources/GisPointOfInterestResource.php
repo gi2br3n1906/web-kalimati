@@ -24,6 +24,8 @@ class GisPointOfInterestResource extends Resource
 
     protected static ?string $navigationGroup = 'Web GIS';
 
+    protected static ?string $navigationLabel = 'Lokasi Desa & Fasilitas';
+
     protected static ?string $modelLabel = 'Titik Lokasi';
 
     protected static ?string $pluralModelLabel = 'Titik Lokasi';

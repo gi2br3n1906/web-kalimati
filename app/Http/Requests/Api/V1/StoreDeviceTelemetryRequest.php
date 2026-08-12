@@ -26,6 +26,8 @@ class StoreDeviceTelemetryRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
             'temp_air' => ['required', 'numeric', 'between:-50,80'],
             'hum_air' => ['required', 'numeric', 'between:0,100'],
             'temp_soil' => ['required', 'numeric', 'between:-20,80'],

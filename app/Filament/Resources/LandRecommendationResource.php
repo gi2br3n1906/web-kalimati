@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\AiConditionStatus;
 use App\Filament\Resources\LandRecommendationResource\Pages;
-use App\Models\LandRecommendation;
+use App\Models\AiRecommendation;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\PageRegistration;
@@ -17,7 +18,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class LandRecommendationResource extends Resource
 {
-    protected static ?string $model = LandRecommendation::class;
+    protected static ?string $model = AiRecommendation::class;
+
+    protected static ?string $slug = 'land-recommendations';
 
     protected static ?string $navigationIcon = 'heroicon-o-light-bulb';
 
@@ -32,18 +35,15 @@ class LandRecommendationResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Diagnostik AI')
+            Forms\Components\Section::make('Analisis Gemini AI')
                 ->schema([
-                    Forms\Components\TextInput::make('landGrid.grid_code')->label('Kode Grid')->disabled(),
-                    Forms\Components\TextInput::make('ai_model_used')->label('Model')->disabled(),
-                    Forms\Components\Textarea::make('soil_condition_summary')->label('Ringkasan Kondisi Tanah')->disabled()->rows(4)->columnSpanFull(),
-                    Forms\Components\Textarea::make('fertilizer_dosage')->label('Dosis Pupuk')->disabled()->rows(4)->columnSpanFull(),
-                    Forms\Components\Textarea::make('lime_treatment')->label('Perlakuan Dolomit')->disabled()->rows(4)->columnSpanFull(),
-                    Forms\Components\Textarea::make('action_plan')->label('Rencana Tindakan')->disabled()->rows(6)->columnSpanFull(),
-                ]),
-            Forms\Components\Section::make('Pelaksanaan')
-                ->schema([
-                    Forms\Components\Toggle::make('is_applied')->label('Sudah Diterapkan'),
+                    Forms\Components\TextInput::make('device.name')->label('Perangkat')->disabled(),
+                    Forms\Components\Select::make('condition_status')
+                        ->label('Status Kondisi')
+                        ->options(collect(AiConditionStatus::cases())->mapWithKeys(static fn (AiConditionStatus $status): array => [$status->value => $status->label()])->all())
+                        ->disabled(),
+                    Forms\Components\TextInput::make('action_title')->label('Headline')->disabled()->columnSpanFull(),
+                    Forms\Components\Textarea::make('recommendation_text')->label('Isi Rekomendasi')->disabled()->rows(8)->columnSpanFull(),
                 ]),
         ]);
     }
@@ -51,27 +51,30 @@ class LandRecommendationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('landGrid.grid_code')->label('Kode Grid')->searchable()->sortable(),
-            Tables\Columns\TextColumn::make('ai_model_used')->label('Model')->badge(),
-            Tables\Columns\TextColumn::make('soil_condition_summary')->label('Ringkasan')->limit(60)->wrap(),
-            Tables\Columns\IconColumn::make('is_applied')->label('Diterapkan')->boolean()->sortable(),
-            Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime('d M Y, H:i')->sortable(),
+            Tables\Columns\TextColumn::make('device.name')->label('Perangkat')->description(static fn (AiRecommendation $record): string => $record->device->device_code)->searchable()->sortable(),
+            Tables\Columns\TextColumn::make('condition_status')->label('Status Kondisi')
+                ->formatStateUsing(static fn (AiConditionStatus $state): string => $state->label())
+                ->color(static fn (AiConditionStatus $state): string => $state->color())
+                ->badge()
+                ->sortable(),
+            Tables\Columns\TextColumn::make('action_title')->label('Headline')->searchable()->wrap(),
+            Tables\Columns\TextColumn::make('recommendation_text')->label('Isi Rekomendasi')->limit(100)->wrap()->tooltip(static fn (string $state): string => $state),
+            Tables\Columns\TextColumn::make('created_at')->label('Dianalisis')->dateTime('d M Y, H:i:s')->sortable(),
         ])->filters([
-            Tables\Filters\TernaryFilter::make('is_applied')->label('Status Pelaksanaan'),
+            Tables\Filters\SelectFilter::make('iot_device_id')->relationship('device', 'name')->label('Perangkat')->searchable()->preload(),
+            Tables\Filters\SelectFilter::make('condition_status')->label('Status Kondisi')
+                ->options(collect(AiConditionStatus::cases())->mapWithKeys(static fn (AiConditionStatus $status): array => [$status->value => $status->label()])->all()),
         ])->actions([
-            Tables\Actions\EditAction::make(),
-            Tables\Actions\DeleteAction::make(),
-        ])->bulkActions([
-            Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()]),
+            Tables\Actions\ViewAction::make(),
         ])->defaultSort('created_at', 'desc');
     }
 
     /**
-     * @return Builder<LandRecommendation>
+     * @return Builder<AiRecommendation>
      */
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->with('landGrid');
+        return parent::getEloquentQuery()->with('device');
     }
 
     /** @return array<string, RelationManagerConfiguration> */
@@ -85,7 +88,7 @@ class LandRecommendationResource extends Resource
     {
         return [
             'index' => Pages\ListLandRecommendations::route('/'),
-            'edit' => Pages\EditLandRecommendation::route('/{record}/edit'),
+            'view' => Pages\ViewLandRecommendation::route('/{record}'),
         ];
     }
 }

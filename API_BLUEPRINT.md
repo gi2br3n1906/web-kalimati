@@ -58,8 +58,9 @@ Validation Error Response (422 Unprocessable Entity):
 - Method: `POST`
 - Path: `/api/v1/telemetry`
 - Header: `X-Device-Token` (token unik dari `iot_devices`)
-- Payload: `temp_air`, `hum_air`, `temp_soil`, `hum_soil_percent`, `raw_soil`, `lux_light`.
-- Response: HTTP `200`; telemetry disimpan dan `ProcessTelemetryAiReasoning` didispatch ke queue setelah transaksi commit.
+- Payload: `latitude`, `longitude`, `temp_air`, `hum_air`, `temp_soil`, `hum_soil_percent`, `raw_soil`, `lux_light`.
+- Response: HTTP `200`; telemetry dan snapshot koordinat disimpan, posisi/`last_active_at` perangkat diperbarui, perangkat diasosiasikan ke grid aktif terdekat, dan `ProcessTelemetryAiReasoning` dijalankan synchronous sebelum respons dikirim.
+- `data.recommendation_id` selalu tersedia. Jika provider AI gagal, endpoint menyimpan rekomendasi fallback berstatus `caution` agar ingestion tidak bergantung pada `queue:work`.
 - Token invalid, kosong, atau perangkat nonaktif mengembalikan HTTP `401`.
 
 Endpoint legacy `/api/v1/iot/telemetry` tetap dipertahankan untuk sensor grid pH lama.

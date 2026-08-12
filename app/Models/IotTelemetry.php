@@ -16,6 +16,8 @@ class IotTelemetry extends Model
     /** @var array<int, string> */
     protected $fillable = [
         'iot_device_id',
+        'latitude',
+        'longitude',
         'temp_air',
         'hum_air',
         'temp_soil',
@@ -28,6 +30,8 @@ class IotTelemetry extends Model
     protected function casts(): array
     {
         return [
+            'latitude' => 'float',
+            'longitude' => 'float',
             'temp_air' => 'float',
             'hum_air' => 'float',
             'temp_soil' => 'float',

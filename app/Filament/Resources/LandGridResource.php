@@ -31,6 +31,8 @@ class LandGridResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -64,6 +66,7 @@ class LandGridResource extends Resource
                 Tables\Columns\TextColumn::make('owner_name')->label('Pemilik')->placeholder('-')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('status')->label('Status')->formatStateUsing(static fn (LandGridStatus $state): string => $state->label())->badge()->sortable(),
                 Tables\Columns\TextColumn::make('sensor_logs_count')->label('Log')->counts('sensorLogs')->alignCenter(),
+                Tables\Columns\TextColumn::make('iot_devices_count')->label('Perangkat IoT')->counts('iotDevices')->alignCenter(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('commodity_type')->label('Komoditas')->options(CommodityType::options()),
