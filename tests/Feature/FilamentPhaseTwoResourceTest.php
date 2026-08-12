@@ -43,7 +43,8 @@ it('allows super admin to access phase two filament resources', function (): voi
 
     $this->actingAs(phaseTwoUser(RoleType::SUPER_ADMIN))
         ->get('/admin/news-articles')
-        ->assertOk();
+        ->assertOk()
+        ->assertSee('Pemetaan Potensi Desa Bersama Tim KKN');
 
     $this->get('/admin/news-articles/create')
         ->assertOk();

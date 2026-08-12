@@ -3,9 +3,12 @@
 declare(strict_types=1);
 
 use App\Livewire\Public\LandingIndex;
+use Database\Seeders\DatabaseSeeder;
 use Livewire\Livewire;
 
 it('renders the public village landing page with the expected public service links', function (): void {
+    $this->seed(DatabaseSeeder::class);
+
     $this->get('/')
         ->assertOk()
         ->assertSee('Portal Resmi Pemerintah Desa Kalimati')

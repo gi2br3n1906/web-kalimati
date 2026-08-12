@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Public;
 
-use App\Support\PublicNewsCatalog;
+use App\Models\NewsArticle;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 
 class LandingIndex extends Component
@@ -56,10 +57,15 @@ class LandingIndex extends Component
         ];
     }
 
-    /** @return array<int, array{date: string, category: string, title: string, excerpt: string, image: string}> */
-    public function latestNews(): array
+    /** @return Collection<int, NewsArticle> */
+    public function latestNews(): Collection
     {
-        return PublicNewsCatalog::articles()->take(3)->all();
+        return NewsArticle::query()
+            ->with('media')
+            ->published()
+            ->latest('published_at')
+            ->limit(3)
+            ->get();
     }
 
     public function selectHeroSlide(int $slide): void
