@@ -3,6 +3,41 @@
 @tailwind utilities;
 
 @layer components {
+    .gps-connection-status {
+        display: inline-flex;
+        min-height: 36px;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #fecaca;
+        border-radius: 999px;
+        background: #fef2f2;
+        padding: 8px 12px;
+        color: #b91c1c;
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .gps-connection-dot {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: currentColor;
+    }
+
+    .gps-connection-status[data-state='connecting'] {
+        border-color: #fde68a;
+        background: #fffbeb;
+        color: #a16207;
+    }
+
+    .gps-connection-status[data-state='connected'] {
+        border-color: #a7f3d0;
+        background: #ecfdf5;
+        color: #047857;
+    }
+
     .research-shell {
         @apply min-h-screen bg-slate-50 px-4 py-6 text-slate-900 sm:px-8 lg:px-12;
     }

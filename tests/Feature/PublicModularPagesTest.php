@@ -53,6 +53,7 @@ it('exposes all shared public navigation routes', function (): void {
         ->and(route('public.profile', absolute: false))->toBe('/profil')
         ->and(route('public.agriculture', absolute: false))->toBe('/pertanian')
         ->and(route('public.gis.map', absolute: false))->toBe('/peta')
+        ->and(route('public.gps.sync', absolute: false))->toBe('/sync-gps')
         ->and(route('public.news.index', absolute: false))->toBe('/berita')
         ->and(route('public.news.show', 'contoh', absolute: false))->toBe('/berita/contoh');
 });

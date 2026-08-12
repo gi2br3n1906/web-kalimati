@@ -28,6 +28,7 @@
                         ['label' => 'Profil & Sejarah', 'route' => 'public.profile'],
                         ['label' => 'Smart Agriculture', 'route' => 'public.agriculture'],
                         ['label' => 'Peta Spasial', 'route' => 'public.gis.map'],
+                        ['label' => 'Sinkron GPS', 'route' => 'public.gps.sync'],
                         ['label' => 'Kabar Desa', 'route' => 'public.news.index'],
                     ];
                 @endphp
@@ -68,7 +69,7 @@
                     <p class="mt-4 text-sm leading-6 text-slate-400">Portal resmi informasi, potensi, dan pelayanan publik Desa Kalimati.</p>
                 </div>
                 <div><h2 class="font-bold text-white">Akses Cepat</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.home') }}">Beranda</a><a href="{{ route('public.profile') }}">Profil & Sejarah</a><a href="{{ route('public.agriculture') }}">Smart Agriculture</a></div></div>
-                <div><h2 class="font-bold text-white">Layanan</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.gis.map') }}">Peta Spasial</a><a href="{{ route('public.news.index') }}">Kabar Desa</a><a href="{{ url('/admin') }}">Panel Admin</a></div></div>
+                <div><h2 class="font-bold text-white">Layanan</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><a href="{{ route('public.gis.map') }}">Peta Spasial</a><a href="{{ route('public.gps.sync') }}">Sinkron GPS Alat Sawah</a><a href="{{ route('public.news.index') }}">Kabar Desa</a><a href="{{ url('/admin') }}">Panel Admin</a></div></div>
                 <div><h2 class="font-bold text-white">Kontak Balai Desa</h2><div class="mt-4 grid gap-2 text-sm text-slate-400"><span>pemdes@kalimati.desa.id</span><span>+62 812-3456-7890</span><span>Senin–Jumat, 08.00–15.00 WIB</span></div></div>
             </div>
             <div class="border-t border-white/10 px-4 py-5 text-center text-xs text-slate-500">&copy; 2026 Pemerintah Desa Kalimati. Seluruh hak dilindungi.</div>
