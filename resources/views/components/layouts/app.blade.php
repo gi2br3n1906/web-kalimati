@@ -1,4 +1,61 @@
-@props(['title' => 'Portal Resmi Desa Kalimati'])
+@props([
+    'title' => null,
+    'description' => null,
+    'keywords' => 'Desa Kalimati, Kalimati Boyolali, Smart Agriculture Kalimati, Web GIS Desa Kalimati, Berita Desa Kalimati',
+    'canonical' => null,
+    'image' => null,
+    'type' => 'website',
+    'publishedAt' => null,
+    'updatedAt' => null,
+    'authorName' => null,
+])
+
+@php
+    $defaultTitle = 'Desa Kalimati - Portal & Smart Agriculture Kab. Boyolali';
+    $defaultDescription = 'Website resmi Desa Kalimati, Kabupaten Boyolali, yang menyediakan sistem informasi desa, kabar KKN dan Pemerintah Desa, Web GIS, serta pemantauan Smart Agriculture IoT.';
+    $pageTitle = trim((string) $title);
+    $seoTitle = $pageTitle === ''
+        ? $defaultTitle
+        : (str_contains($pageTitle, 'Desa Kalimati') ? $pageTitle : $pageTitle.' | Desa Kalimati');
+    $seoDescription = filled($description) ? trim((string) $description) : $defaultDescription;
+    $seoCanonical = filled($canonical) ? (string) $canonical : url()->current();
+    $seoImage = filled($image) ? (string) $image : asset('images/logo-boyolali.svg');
+    $seoType = $type === 'article' ? 'article' : 'website';
+    $structuredData = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'GovernmentOffice',
+                '@id' => url('/').'#pemerintah-desa',
+                'name' => 'Pemerintah Desa Kalimati',
+                'url' => url('/'),
+                'logo' => asset('images/logo-boyolali.svg'),
+                'image' => $seoImage,
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => 'Kalimati',
+                    'addressRegion' => 'Jawa Tengah',
+                    'addressCountry' => 'ID',
+                ],
+                'areaServed' => ['@id' => url('/').'#desa-kalimati'],
+            ],
+            [
+                '@type' => 'AdministrativeArea',
+                '@id' => url('/').'#desa-kalimati',
+                'name' => 'Desa Kalimati',
+                'containedInPlace' => [
+                    '@type' => 'AdministrativeArea',
+                    'name' => 'Kabupaten Boyolali',
+                ],
+                'geo' => [
+                    '@type' => 'GeoCoordinates',
+                    'latitude' => -7.2145,
+                    'longitude' => 110.8234,
+                ],
+            ],
+        ],
+    ];
+@endphp
 
 <!DOCTYPE html>
 <html lang="id">
@@ -6,7 +63,35 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }} - Desa Kalimati</title>
+    <title>@yield('title', e($seoTitle))</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="keywords" content="{{ $keywords }}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ $seoCanonical }}">
+
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:site_name" content="Desa Kalimati">
+    <meta property="og:title" content="{{ $seoTitle }}">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:image" content="{{ $seoImage }}">
+    <meta property="og:url" content="{{ $seoCanonical }}">
+    <meta property="og:type" content="{{ $seoType }}">
+    @if ($seoType === 'article' && filled($publishedAt))
+        <meta property="article:published_time" content="{{ $publishedAt }}">
+    @endif
+    @if ($seoType === 'article' && filled($updatedAt))
+        <meta property="article:modified_time" content="{{ $updatedAt }}">
+    @endif
+    @if ($seoType === 'article' && filled($authorName))
+        <meta property="article:author" content="{{ $authorName }}">
+    @endif
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seoTitle }}">
+    <meta name="twitter:description" content="{{ $seoDescription }}">
+    <meta name="twitter:image" content="{{ $seoImage }}">
+
+    <script type="application/ld+json">{!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR) !!}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">

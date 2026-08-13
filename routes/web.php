@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SitemapController;
 use App\Livewire\Public\AgricultureIndex;
 use App\Livewire\Public\GisInteractiveMap;
 use App\Livewire\Public\LandingIndex;
@@ -10,6 +12,9 @@ use App\Livewire\Public\NewsShow;
 use App\Livewire\Public\ProfileIndex;
 use App\Livewire\Public\SyncGps;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/sitemap.xml', SitemapController::class)->name('seo.sitemap');
+Route::get('/robots.txt', RobotsController::class)->name('seo.robots');
 
 Route::get('/', LandingIndex::class)->name('public.home');
 Route::get('/profil', ProfileIndex::class)->name('public.profile');
