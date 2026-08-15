@@ -17,13 +17,13 @@ class LocationPointResource extends Resource
 {
     protected static ?string $model = IotDevice::class;
 
-    protected static ?string $slug = 'location-points';
+    protected static ?string $slug = 'iot-location-points';
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?string $navigationGroup = 'Web GIS';
 
-    protected static ?string $navigationLabel = 'Titik Lokasi';
+    protected static ?string $navigationLabel = 'Titik Perangkat IoT';
 
     protected static ?string $modelLabel = 'Titik Lokasi IoT';
 

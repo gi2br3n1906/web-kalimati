@@ -6,35 +6,60 @@ namespace App\Enums;
 
 enum PoiCategory: string
 {
-    case PEMERINTAHAN = 'pemerintahan';
-    case FASILITAS_UMUM = 'fasilitas_umum';
-    case PENDIDIKAN = 'pendidikan';
-    case PERTANIAN_IOT = 'pertanian_iot';
-    case IBADAH = 'ibadah';
-    case POSYANDU = 'posyandu';
+    case FASILITAS_UMUM_PEMERINTAHAN = 'pemerintahan';
+    case UMKM_EKONOMI = 'umkm_ekonomi';
+    case TEMPAT_IBADAH = 'ibadah';
+    case PENDIDIKAN_KESEHATAN = 'pendidikan';
+    case INFRASTRUKTUR_TRANSPORTASI = 'infrastruktur_transportasi';
+    case PERTANIAN_LINGKUNGAN = 'pertanian_iot';
+
+    public const PEMERINTAHAN = self::FASILITAS_UMUM_PEMERINTAHAN;
+
+    public const FASILITAS_UMUM = self::FASILITAS_UMUM_PEMERINTAHAN;
+
+    public const IBADAH = self::TEMPAT_IBADAH;
+
+    public const PENDIDIKAN = self::PENDIDIKAN_KESEHATAN;
+
+    public const POSYANDU = self::PENDIDIKAN_KESEHATAN;
+
+    public const PERTANIAN_IOT = self::PERTANIAN_LINGKUNGAN;
 
     public function label(): string
     {
         return match ($this) {
-            self::PEMERINTAHAN => 'Pemerintahan',
-            self::FASILITAS_UMUM => 'Fasilitas Umum',
-            self::PENDIDIKAN => 'Pendidikan',
-            self::PERTANIAN_IOT => 'Pertanian / IoT',
-            self::IBADAH => 'Tempat Ibadah',
-            self::POSYANDU => 'Posyandu',
+            self::FASILITAS_UMUM_PEMERINTAHAN => 'Fasilitas Umum & Pemerintahan',
+            self::UMKM_EKONOMI => 'UMKM & Ekonomi',
+            self::TEMPAT_IBADAH => 'Tempat Ibadah',
+            self::PENDIDIKAN_KESEHATAN => 'Pendidikan & Kesehatan',
+            self::INFRASTRUKTUR_TRANSPORTASI => 'Infrastruktur & Transportasi',
+            self::PERTANIAN_LINGKUNGAN => 'Pertanian & Lingkungan',
         };
     }
 
     public function defaultMarker(): string
     {
         return match ($this) {
-            self::PEMERINTAHAN => 'building-government',
-            self::FASILITAS_UMUM => 'landmark',
-            self::PENDIDIKAN => 'school',
-            self::PERTANIAN_IOT => 'agriculture-iot',
-            self::IBADAH => 'place-of-worship',
-            self::POSYANDU => 'health-center',
+            self::FASILITAS_UMUM_PEMERINTAHAN => 'building-government',
+            self::UMKM_EKONOMI => 'storefront',
+            self::TEMPAT_IBADAH => 'place-of-worship',
+            self::PENDIDIKAN_KESEHATAN => 'education-health',
+            self::INFRASTRUKTUR_TRANSPORTASI => 'transport',
+            self::PERTANIAN_LINGKUNGAN => 'agriculture-environment',
         };
+    }
+
+    public static function fromLabel(string $label): ?self
+    {
+        $normalizedLabel = trim($label);
+
+        foreach (self::cases() as $category) {
+            if (strcasecmp($category->label(), $normalizedLabel) === 0) {
+                return $category;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -57,12 +82,12 @@ enum PoiCategory: string
     public static function markerOptions(): array
     {
         return [
-            'building-government' => 'Kantor Pemerintahan',
-            'landmark' => 'Fasilitas Umum',
-            'school' => 'Sekolah',
-            'agriculture-iot' => 'Pertanian / IoT',
+            'building-government' => 'Fasilitas Umum / Pemerintahan',
+            'storefront' => 'UMKM / Ekonomi',
             'place-of-worship' => 'Tempat Ibadah',
-            'health-center' => 'Pusat Kesehatan',
+            'education-health' => 'Pendidikan / Kesehatan',
+            'transport' => 'Infrastruktur / Transportasi',
+            'agriculture-environment' => 'Pertanian / Lingkungan',
         ];
     }
 }

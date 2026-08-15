@@ -20,11 +20,13 @@ class GisPointOfInterestResource extends Resource
 {
     protected static ?string $model = GisPointOfInterest::class;
 
+    protected static ?string $slug = 'location-points';
+
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?string $navigationGroup = 'Web GIS';
 
-    protected static ?string $navigationLabel = 'Lokasi Desa & Fasilitas';
+    protected static ?string $navigationLabel = 'Titik Lokasi';
 
     protected static ?string $modelLabel = 'Titik Lokasi';
 

@@ -57,7 +57,7 @@ class ListGisPointsOfInterest extends ListRecords
                     Forms\Components\Select::make('category')
                         ->label('Kategori Default')
                         ->options(PoiCategory::options())
-                        ->default(PoiCategory::FASILITAS_UMUM->value)
+                        ->default(PoiCategory::FASILITAS_UMUM_PEMERINTAHAN->value)
                         ->native(false)
                         ->required(),
                 ])

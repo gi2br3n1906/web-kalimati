@@ -3,29 +3,37 @@ import 'leaflet/dist/leaflet.css';
 
 const categoryColors = {
     pemerintahan: '#155e75',
-    fasilitas_umum: '#7c3aed',
-    pendidikan: '#1d4ed8',
-    pertanian_iot: '#15803d',
+    umkm_ekonomi: '#7c3aed',
     ibadah: '#a16207',
+    pendidikan: '#1d4ed8',
+    infrastruktur_transportasi: '#475569',
+    pertanian_iot: '#15803d',
+    fasilitas_umum: '#155e75',
     posyandu: '#be123c',
 };
 
 const markerSymbols = {
     'building-government': 'G',
+    storefront: 'U',
+    'place-of-worship': 'I',
+    'education-health': 'D',
+    transport: 'J',
+    'agriculture-environment': 'T',
     landmark: 'F',
     school: 'S',
     'agriculture-iot': 'T',
-    'place-of-worship': 'I',
     'health-center': 'P',
 };
 
 const categoryLabels = {
-    pemerintahan: 'Pemerintahan',
-    fasilitas_umum: 'Fasilitas Umum',
-    pendidikan: 'Pendidikan',
-    pertanian_iot: 'Pertanian / IoT',
+    pemerintahan: 'Fasilitas Umum & Pemerintahan',
+    umkm_ekonomi: 'UMKM & Ekonomi',
     ibadah: 'Tempat Ibadah',
-    posyandu: 'Posyandu',
+    pendidikan: 'Pendidikan & Kesehatan',
+    infrastruktur_transportasi: 'Infrastruktur & Transportasi',
+    pertanian_iot: 'Pertanian & Lingkungan',
+    fasilitas_umum: 'Fasilitas Umum & Pemerintahan',
+    posyandu: 'Pendidikan & Kesehatan',
 };
 
 const escapeHtml = (value) => String(value ?? '')

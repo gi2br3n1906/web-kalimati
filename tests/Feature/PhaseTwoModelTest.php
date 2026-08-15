@@ -46,12 +46,12 @@ it('scopes only published news articles', function (): void {
 
 it('casts gis point category and coordinates', function (): void {
     $point = GisPointOfInterest::factory()->create([
-        'category' => PoiCategory::POSYANDU,
+        'category' => PoiCategory::PENDIDIKAN_KESEHATAN,
         'latitude' => -7.21450000,
         'longitude' => 110.82340000,
     ])->refresh();
 
-    expect($point->category)->toBe(PoiCategory::POSYANDU)
+    expect($point->category)->toBe(PoiCategory::PENDIDIKAN_KESEHATAN)
         ->and($point->latitude)->toBeFloat()
         ->and($point->longitude)->toBeFloat();
 });

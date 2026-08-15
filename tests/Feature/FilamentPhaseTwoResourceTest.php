@@ -49,11 +49,11 @@ it('allows super admin to access phase two filament resources', function (): voi
     $this->get('/admin/news-articles/create')
         ->assertOk();
 
-    $this->get('/admin/gis-point-of-interests')
+    $this->get('/admin/location-points')
         ->assertOk()
         ->assertSee('Import KML Google Earth');
 
-    $this->get('/admin/gis-point-of-interests/create')
+    $this->get('/admin/location-points/create')
         ->assertOk();
 });
 
@@ -71,10 +71,10 @@ it('allows admin desa to access phase two filament resources', function (): void
     $this->get('/admin/news-articles/create')
         ->assertOk();
 
-    $this->get('/admin/gis-point-of-interests')
+    $this->get('/admin/location-points')
         ->assertOk();
 
-    $this->get('/admin/gis-point-of-interests/create')
+    $this->get('/admin/location-points/create')
         ->assertOk();
 });
 
@@ -85,7 +85,7 @@ it('denies kelompok tani access to phase two filament resources', function (): v
         ->get('/admin/news-articles')
         ->assertForbidden();
 
-    $this->get('/admin/gis-point-of-interests')
+    $this->get('/admin/location-points')
         ->assertForbidden();
 });
 
@@ -96,7 +96,7 @@ it('hides GIS write actions without the create point permission', function (): v
     $adminRole->revokePermissionTo('create_gis::point::of::interest');
 
     $this->actingAs(phaseTwoUser(RoleType::ADMIN_DESA))
-        ->get('/admin/gis-point-of-interests')
+        ->get('/admin/location-points')
         ->assertOk()
         ->assertDontSee('Import KML Google Earth');
 });

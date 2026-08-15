@@ -47,7 +47,7 @@ it('allows kelompok tani to access smart agriculture filament resources', functi
         'recommendation_text' => 'Lakukan penyiraman bertahap.',
     ]);
 
-    $this->get('/admin/location-points')
+    $this->get('/admin/iot-location-points')
         ->assertOk()
         ->assertSee('ESP32 Sawah Dampit')
         ->assertSee('IOT-REAL-001');
@@ -92,7 +92,7 @@ it('denies warga access to smart agriculture filament resources', function (): v
         ->get('/admin/farm-grids')
         ->assertForbidden();
 
-    $this->get('/admin/location-points')->assertForbidden();
+    $this->get('/admin/iot-location-points')->assertForbidden();
     $this->get('/admin/sensor-logs')->assertForbidden();
     $this->get('/admin/land-recommendations')->assertForbidden();
     $this->get('/admin/iot-devices')->assertForbidden();

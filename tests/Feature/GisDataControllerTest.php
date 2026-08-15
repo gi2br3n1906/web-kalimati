@@ -8,7 +8,7 @@ use App\Models\GisPointOfInterest;
 it('returns points of interest using the public gis response contract', function (): void {
     $point = GisPointOfInterest::factory()->create([
         'name' => 'Balai Desa Kalimati',
-        'category' => PoiCategory::PEMERINTAHAN,
+        'category' => PoiCategory::FASILITAS_UMUM_PEMERINTAHAN,
         'latitude' => -7.21450000,
         'longitude' => 110.82340000,
         'description' => 'Pusat pelayanan administrasi Desa Kalimati',
@@ -40,7 +40,7 @@ it('returns points of interest using the public gis response contract', function
 it('returns imported polygon geometry through the public gis endpoint', function (): void {
     GisPointOfInterest::factory()->create([
         'name' => 'Area Pertanian Dampit',
-        'category' => PoiCategory::PERTANIAN_IOT,
+        'category' => PoiCategory::PERTANIAN_LINGKUNGAN,
         'latitude' => -7.212,
         'longitude' => 110.822,
         'geojson_geometry' => [
@@ -65,11 +65,11 @@ it('returns imported polygon geometry through the public gis endpoint', function
 it('filters points of interest by category', function (): void {
     GisPointOfInterest::factory()->create([
         'name' => 'Balai Desa Kalimati',
-        'category' => PoiCategory::PEMERINTAHAN,
+        'category' => PoiCategory::FASILITAS_UMUM_PEMERINTAHAN,
     ]);
     GisPointOfInterest::factory()->create([
         'name' => 'SDN 02 Kalimati',
-        'category' => PoiCategory::PENDIDIKAN,
+        'category' => PoiCategory::PENDIDIKAN_KESEHATAN,
     ]);
 
     $this->getJson('/api/v1/gis/points-of-interest?category=pendidikan')

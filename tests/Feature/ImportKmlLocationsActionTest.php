@@ -15,7 +15,7 @@ it('bulk imports KML placemarks using the selected default category', function (
     try {
         $count = app(ImportKmlLocationsAction::class)->execute(
             filePath: $filePath,
-            category: PoiCategory::PERTANIAN_IOT,
+            category: PoiCategory::PERTANIAN_LINGKUNGAN,
             sourceName: 'google-earth.kml',
         );
     } finally {
@@ -28,8 +28,8 @@ it('bulk imports KML placemarks using the selected default category', function (
     $point = GisPointOfInterest::query()->where('name', 'Balai Desa Kalimati')->firstOrFail();
     $polygon = GisPointOfInterest::query()->where('name', 'Area Pertanian Dampit')->firstOrFail();
 
-    expect($point->category)->toBe(PoiCategory::PERTANIAN_IOT)
-        ->and($point->icon_marker)->toBe('agriculture-iot')
+    expect($point->category)->toBe(PoiCategory::PERTANIAN_LINGKUNGAN)
+        ->and($point->icon_marker)->toBe('agriculture-environment')
         ->and($point->mapGeometry()['type'])->toBe('Point')
         ->and($polygon->mapGeometry()['type'])->toBe('Polygon')
         ->and($polygon->geometryTypeLabel())->toBe('Area / Polygon');
