@@ -63,7 +63,14 @@ class SensorLogResource extends Resource
             Tables\Columns\TextColumn::make('created_at')->label('Waktu Catat')->dateTime('d M Y, H:i:s')->sortable(),
         ])->filters([
             Tables\Filters\SelectFilter::make('iot_device_id')->relationship('device', 'name')->label('Perangkat')->searchable()->preload(),
-        ])->actions([Tables\Actions\ViewAction::make()])->defaultSort('created_at', 'desc');
+        ])->actions([
+            Tables\Actions\ViewAction::make(),
+            Tables\Actions\DeleteAction::make(),
+        ])->bulkActions([
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
+        ])->defaultSort('created_at', 'desc');
     }
 
     /**

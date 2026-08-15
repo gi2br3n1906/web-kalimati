@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class IotTelemetry extends Model
 {
@@ -51,5 +52,11 @@ class IotTelemetry extends Model
     public function recommendations(): HasMany
     {
         return $this->hasMany(AiRecommendation::class);
+    }
+
+    /** @return HasOne<AiRecommendation, $this> */
+    public function aiRecommendation(): HasOne
+    {
+        return $this->hasOne(AiRecommendation::class)->latestOfMany();
     }
 }

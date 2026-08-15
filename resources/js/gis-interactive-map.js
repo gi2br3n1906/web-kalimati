@@ -47,65 +47,54 @@ const conditionColors = {
     optimal: '#16a34a',
     caution: '#eab308',
     warning: '#dc2626',
-    critical: '#991b1b',
 };
 
 const conditionLabels = {
     optimal: 'Optimal',
     caution: 'Waspada',
     warning: 'Peringatan',
-    critical: 'Kritis',
 };
 
-const makeIotPopup = (device) => {
-    const telemetry = device.telemetry;
-    const recommendation = device.recommendation;
-    const status = recommendation?.condition_status ?? 'caution';
-    const metrics = telemetry ? `
+const makeTelemetryPopup = (point) => {
+    const sensorData = point.sensor_data;
+    const recommendation = point.recommendation;
+    const status = point.condition_status ?? 'caution';
+    const metrics = sensorData ? `
         <dl class="gis-iot-metrics">
-            <div><dt>Suhu udara</dt><dd>${escapeHtml(telemetry.temp_air)} °C</dd></div>
-            <div><dt>Kelembapan udara</dt><dd>${escapeHtml(telemetry.hum_air)}%</dd></div>
-            <div><dt>Suhu tanah</dt><dd>${escapeHtml(telemetry.temp_soil)} °C</dd></div>
-            <div><dt>Kelembapan tanah</dt><dd>${escapeHtml(telemetry.hum_soil_percent)}%</dd></div>
-            <div><dt>Cahaya</dt><dd>${escapeHtml(telemetry.lux_light)} lux</dd></div>
-        </dl>` : '<p>Belum ada telemetry.</p>';
+            <div><dt>Suhu udara</dt><dd>${escapeHtml(sensorData.temp_air)} °C</dd></div>
+            <div><dt>Kelembapan udara</dt><dd>${escapeHtml(sensorData.hum_air)}%</dd></div>
+            <div><dt>Suhu tanah</dt><dd>${escapeHtml(sensorData.temp_soil)} °C</dd></div>
+            <div><dt>Kelembapan tanah</dt><dd>${escapeHtml(sensorData.hum_soil_percent)}%</dd></div>
+            <div><dt>Intensitas cahaya</dt><dd>${escapeHtml(sensorData.lux_light)} lux</dd></div>
+        </dl>` : '<p>Data sensor tidak tersedia.</p>';
 
     return `<article class="gis-popup gis-iot-popup">
         <span style="background:${conditionColors[status]};color:white;padding:.2rem .5rem;border-radius:999px">${escapeHtml(conditionLabels[status])}</span>
-        <h2>${escapeHtml(device.name)}</h2>
-        <p>${escapeHtml(device.device_code)} · ${escapeHtml(device.crop_type)}</p>
+        <h2>Titik Pengukuran Lapangan #${escapeHtml(point.id)}</h2>
+        <p>${escapeHtml(point.measured_at)}</p>
+        <p>${escapeHtml(point.device?.name ?? 'Perangkat tidak diketahui')} · ${escapeHtml(point.device?.device_code ?? '-')}</p>
         ${metrics}
         <h3>${escapeHtml(recommendation?.action_title ?? 'Menunggu analisis AI')}</h3>
-        <p>${escapeHtml(recommendation?.recommendation_text ?? 'Rekomendasi akan tersedia setelah telemetry diproses.')}</p>
+        <p>${escapeHtml(recommendation?.recommendation_text ?? 'Rekomendasi Gemini AI akan tersedia setelah telemetri diproses.')}</p>
     </article>`;
 };
 
-const addIotDevices = (map, layer, devices, bounds) => {
-    devices.forEach((device) => {
-        const coordinates = [device.latitude, device.longitude];
-        const status = device.recommendation?.condition_status ?? 'caution';
+const addTelemetryPoints = (layer, points, bounds) => {
+    points.forEach((point) => {
+        const coordinates = [point.latitude, point.longitude];
+        const status = point.condition_status ?? 'caution';
         const color = conditionColors[status] ?? conditionColors.caution;
-        const popup = makeIotPopup(device);
-        const marker = L.marker(coordinates, {
-            icon: L.divIcon({
-                className: 'gis-marker-wrap',
-                html: `<span class="gis-marker" style="--marker-color:${color}"><span>IoT</span></span>`,
-                iconSize: [40, 44],
-                iconAnchor: [20, 42],
-            }),
-            title: device.name,
-        }).bindPopup(popup);
-        const circle = L.circle(coordinates, {
-            radius: device.coverage_radius_meters,
+        const marker = L.circleMarker(coordinates, {
+            radius: 9,
             color,
             fillColor: color,
-            fillOpacity: 0.18,
-            weight: 2,
-        }).bindPopup(popup);
+            fillOpacity: 0.72,
+            opacity: 1,
+            weight: 3,
+        }).bindPopup(makeTelemetryPopup(point));
 
         marker.addTo(layer);
-        circle.addTo(layer);
-        bounds.extend(circle.getBounds());
+        bounds.extend(coordinates);
     });
 };
 
@@ -156,6 +145,8 @@ const initializeMap = (root) => {
     }).setView(configuration.center, configuration.zoom);
     const featureLayer = L.layerGroup().addTo(map);
     const iotLayer = L.layerGroup().addTo(map);
+    let featurePoints = [];
+    let telemetryPoints = [];
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     L.tileLayer(configuration.tileProvider, {
@@ -170,10 +161,36 @@ const initializeMap = (root) => {
         count.hidden = true;
     };
 
+    const fitCombinedBounds = () => {
+        const bounds = L.latLngBounds();
+
+        featurePoints.forEach((point) => {
+            const geometry = point.geometry ?? {
+                type: 'Point',
+                coordinates: [point.longitude, point.latitude],
+            };
+
+            if (geometry.type === 'Point') {
+                bounds.extend([geometry.coordinates[1], geometry.coordinates[0]]);
+            } else {
+                bounds.extend(L.geoJSON(geometry).getBounds());
+            }
+        });
+        telemetryPoints.forEach((point) => bounds.extend([point.latitude, point.longitude]));
+
+        if (bounds.isValid()) {
+            map.fitBounds(bounds, { padding: [56, 56], maxZoom: 16 });
+            status.hidden = true;
+        } else {
+            map.setView(configuration.center, configuration.zoom);
+            status.hidden = false;
+            status.textContent = 'Belum ada titik lokasi atau pengukuran pada kategori ini.';
+        }
+    };
+
     const renderFeatures = (points) => {
         featureLayer.clearLayers();
-
-        const bounds = L.latLngBounds();
+        featurePoints = points;
 
         points.forEach((point) => {
             const geometry = point.geometry ?? {
@@ -194,7 +211,6 @@ const initializeMap = (root) => {
 
                 polygon.bindPopup(makePopup(point));
                 polygon.addTo(featureLayer);
-                bounds.extend(polygon.getBounds());
 
                 return;
             }
@@ -207,34 +223,26 @@ const initializeMap = (root) => {
 
             marker.bindPopup(makePopup(point));
             marker.addTo(featureLayer);
-            bounds.extend(coordinates);
         });
 
-        if (bounds.isValid()) {
-            map.fitBounds(bounds, {
-                padding: [56, 56],
-                maxZoom: 16,
-            });
-            status.hidden = true;
-        } else {
-            map.setView(configuration.center, configuration.zoom);
-            status.hidden = false;
-            status.textContent = 'Belum ada titik lokasi pada kategori ini.';
-        }
-
-        count.textContent = `${points.length} fitur lokasi`;
+        fitCombinedBounds();
+        count.textContent = `${points.length} fitur lokasi · ${telemetryPoints.length} titik pengukuran`;
         count.hidden = false;
     };
 
-    const loadIotDevices = async () => {
-        if (!configuration.iotEndpoint) return;
+    const loadTelemetryPoints = async () => {
+        if (!configuration.telemetryEndpoint) return;
 
-        const response = await fetch(configuration.iotEndpoint, { headers: { Accept: 'application/json' } });
-        if (!response.ok) throw new Error(`IoT GIS request failed with status ${response.status}`);
+        const response = await fetch(configuration.telemetryEndpoint, { headers: { Accept: 'application/json' } });
+        if (!response.ok) throw new Error(`Telemetry GIS request failed with status ${response.status}`);
         const payload = await response.json();
         const bounds = L.latLngBounds();
         iotLayer.clearLayers();
-        addIotDevices(map, iotLayer, payload.data, bounds);
+        telemetryPoints = payload.data;
+        addTelemetryPoints(iotLayer, telemetryPoints, bounds);
+        fitCombinedBounds();
+        count.textContent = `${featurePoints.length} fitur lokasi · ${telemetryPoints.length} titik pengukuran`;
+        count.hidden = false;
     };
 
     const loadPoints = async (category = '') => {
@@ -278,7 +286,7 @@ const initializeMap = (root) => {
         });
     });
 
-    Promise.all([loadPoints(), loadIotDevices()]).catch(console.error);
+    Promise.all([loadPoints(), loadTelemetryPoints()]).catch(console.error);
 
     window.setTimeout(() => map.invalidateSize(), 0);
 };
@@ -300,19 +308,19 @@ const initializeIotMap = (root) => {
     const layer = L.layerGroup().addTo(map);
     L.tileLayer(configuration.tileProvider, { attribution: configuration.tileAttribution, maxZoom: 19 }).addTo(map);
 
-    fetch(configuration.iotEndpoint, { headers: { Accept: 'application/json' } })
+    fetch(configuration.telemetryEndpoint, { headers: { Accept: 'application/json' } })
         .then((response) => {
             if (!response.ok) throw new Error(`IoT GIS request failed with status ${response.status}`);
             return response.json();
         })
         .then((payload) => {
             const bounds = L.latLngBounds();
-            addIotDevices(map, layer, payload.data, bounds);
-            status.textContent = `${payload.data.length} perangkat IoT aktif`;
+            addTelemetryPoints(layer, payload.data, bounds);
+            status.textContent = `${payload.data.length} titik pengukuran telemetri`;
             if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 16 });
         })
         .catch((error) => {
-            status.textContent = 'Data perangkat IoT tidak dapat dimuat.';
+            status.textContent = 'Data titik pengukuran tidak dapat dimuat.';
             console.error(error);
         });
 };

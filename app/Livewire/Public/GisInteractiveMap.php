@@ -16,7 +16,7 @@ class GisInteractiveMap extends Component
             'categories' => PoiCategory::options(),
             'mapConfiguration' => [
                 'endpoint' => route('v1.gis.points-of-interest', absolute: false),
-                'iotEndpoint' => route('v1.gis.iot-devices', absolute: false),
+                'telemetryEndpoint' => route('v1.gis.telemetries', absolute: false),
                 'tileProvider' => config('gis.tile_provider'),
                 'tileAttribution' => config('gis.tile_attribution'),
                 'center' => [

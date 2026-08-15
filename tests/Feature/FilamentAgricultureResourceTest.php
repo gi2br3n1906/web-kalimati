@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 use App\Enums\RoleType;
+use App\Filament\Resources\SensorLogResource\Pages\ListSensorLogs;
 use App\Models\AiRecommendation;
 use App\Models\IotDevice;
 use App\Models\IotTelemetry;
 use App\Models\LandGrid;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
 function agricultureUser(RoleType $role): User
@@ -83,6 +85,26 @@ it('allows super admin to access and see the iot device resource', function (): 
     $this->get('/admin')
         ->assertOk()
         ->assertSee('Perangkat IoT');
+});
+
+it('allows super admin to delete a sensor log and its ai recommendation from filament', function (): void {
+    $this->seed(DatabaseSeeder::class);
+    $this->actingAs(agricultureUser(RoleType::SUPER_ADMIN));
+
+    $device = IotDevice::factory()->create();
+    $telemetry = IotTelemetry::factory()->for($device, 'device')->create();
+    $recommendation = AiRecommendation::factory()
+        ->for($device, 'device')
+        ->for($telemetry, 'telemetry')
+        ->create();
+
+    Livewire::test(ListSensorLogs::class)
+        ->assertTableActionVisible('delete', $telemetry)
+        ->callTableAction('delete', $telemetry)
+        ->assertHasNoTableActionErrors();
+
+    $this->assertModelMissing($telemetry);
+    $this->assertModelMissing($recommendation);
 });
 
 it('denies warga access to smart agriculture filament resources', function (): void {

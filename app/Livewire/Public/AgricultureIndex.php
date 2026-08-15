@@ -109,7 +109,7 @@ class AgricultureIndex extends Component
     {
         return view('livewire.public.agriculture-index', [
             'iotMapConfiguration' => [
-                'iotEndpoint' => route('v1.gis.iot-devices', absolute: false),
+                'telemetryEndpoint' => route('v1.gis.telemetries', absolute: false),
                 'tileProvider' => config('gis.tile_provider'),
                 'tileAttribution' => config('gis.tile_attribution'),
                 'center' => [(float) config('gis.center.latitude'), (float) config('gis.center.longitude')],

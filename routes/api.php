@@ -15,6 +15,8 @@ Route::prefix('v1/gis')
             ->name('points-of-interest');
         Route::get('/iot-devices', [GisDataController::class, 'iotDevices'])
             ->name('iot-devices');
+        Route::get('/telemetries', [GisDataController::class, 'telemetries'])
+            ->name('telemetries');
     });
 
 Route::post('/v1/telemetry', [DeviceTelemetryController::class, 'store'])
